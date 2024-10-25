@@ -27,11 +27,11 @@ namespace MillionaireGame
             {
                 case "1":
                     game.StartNewGame();
-                    ShowGameMenu(game);
+                    game.StartScenario();
                     break;
                 case "2":
                     game.LoadSavedGame();
-                    ShowGameMenu(game);
+                    ShowMainMenu(game);
                     break;
                 case "3":
                     game.ExitGame();
