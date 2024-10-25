@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -13,6 +14,8 @@ namespace MillionaireGame
     {
         private Player _player; // En referens till spelaren som representerar användarens karaktär i spelet
         private List<Scenario> _scenarios;
+        private Stopwatch _stopwatch; //Tidtagare
+        private double _monthlyRent; //Månadshyra
         
         public Player Player // Offentlig egenskap för att komma åt spelaren
         {
@@ -22,6 +25,7 @@ namespace MillionaireGame
         public Game()
         {
             _scenarios = InitializeScenarios();
+            _stopwatch = new Stopwatch();
         }
 
 
@@ -51,11 +55,22 @@ namespace MillionaireGame
             Console.WriteLine("------------- NYTT SPEL ---------------");
             Console.WriteLine("Skriv ditt namn:"); // Ber användaren om sitt namn
             string playerName = Console.ReadLine(); // Tar emot spelarens namn
-            _player = new Player(playerName, 10000, 100, 100); // Skapar en ny spelare med startkapital och karma
-            Console.WriteLine($"Välkommen {_player.Name}! Spelet börjar nu! Lycka till!"); // Välkomnar spelaren
-            Console.WriteLine("Tryck på [Enter] för att fortsätta..."); // Instruktion för att fortsätta
+            _player = new Player(playerName, 30000, 100, 100, this); // Skapar en ny spelare med startkapital och karma
+            Console.WriteLine($"Välkommen {_player.Name}!"); // Välkomnar spelaren
+            Console.WriteLine("Du har precis tagit dina första steg i Kapitalträsk, där beslut om pengar och moral väger tungt.");
+            Console.WriteLine("");
+            Console.WriteLine("Spelets regler:");
+            Console.WriteLine("- Du startar med 30 000 SEK i kapital, 100 i karma och 100 i social status.");
+            Console.WriteLine("- Varje beslut du tar kommer att påverka ditt kapital, karma och sociala status.");
+            Console.WriteLine("- Din tid i spelet är begränsad, och varje månad (5 minuter i speltid) kommer du att behöva betala dina fasta utgifter.");
+            Console.WriteLine("- Målet är att uppnå miljonärstatus genom att fatta strategiska beslut och hålla dig över vattenytan.");
+            Console.WriteLine("");
+            Console.WriteLine("Är du redo att bli nästa stjärnskott i Kapitalträsk? Det är upp till dig att göra rätt val – eller de mest lönsamma!");
+            Console.WriteLine("Tryck på [Enter] för att börja ditt äventyr!");
+            Console.WriteLine("---------------------------------------------------");
             Console.ReadLine(); // Väntar på att spelaren trycker Enter
-            GameIntro(); // Startar bakgrundsbeskrivning
+            _stopwatch.Start();
+            StartScenario(); //Startar första scenariot
         }
 
         public void GameIntro()
@@ -71,13 +86,13 @@ namespace MillionaireGame
             Console.WriteLine("företag som säljer ”eksklusiva” skräpföremål. För varför fokusera på kvalitet när kvantitet och snabba ");
             Console.WriteLine("vinster är det enda som räknas?");
             Console.WriteLine("");
-            Console.WriteLine("Spelets mål är att du framgångsrikt ska sälja din själ för att uppnå den eftertraktade statusen miljonär. Du ");
-            Console.WriteLine("bjuds in till en värld där din värdegrund ställs på prov (om du ens har någon) och där moral och etik är mer ");
-            Console.WriteLine("som rekommendationer än regler. ");
+            Console.WriteLine("Spelets mål är att du så snabbt som möjligt ska uppnå den eftertraktade statusen miljonär. Du bjuds in till  ");
+            Console.WriteLine("en värld där din värdegrund ställs på prov och där moral och etik är mer som rekommendationer än regler. ");
+            Console.WriteLine("Risken finns att du kan komma att behöva sälja din själ! ");
             Console.WriteLine("");
             Console.WriteLine("Tryck på [Enter] för att fortsätta...");
             Console.ReadLine();
-            StartScenario(); //Startar första scenariot
+            StartNewGame();
 
         }
 
@@ -85,29 +100,64 @@ namespace MillionaireGame
         public void LoadSavedGame()
         {
             Console.Clear(); // Rensar konsolen
-            Console.WriteLine("----------- LADDAR SPEL --------------");
+            Console.WriteLine("----------- VÄLJ SPARAT SPEL --------------");
             // Här kan du implementera logik för att ladda ett sparat spel
             Console.WriteLine("Inga sparade spel hittades. Tryck på [Enter] för att återgå till huvudmenyn..."); // Meddelande till användaren
             Console.ReadLine(); // Väntar på att spelaren trycker Enter
             Menu.ShowMainMenu(this); // Går tillbaka till huvudmenyn
         }
 
-        
-        // Metod för att avsluta spelet
-        public void ExitGame()
+
+
+        // Omvandla tid till månader
+        public (int years, int months) GetTotalTimePlayed()
         {
-            Console.Clear(); // Rensar konsolen
-            Console.WriteLine("Tack för att du spelade Kapitalets Utmaning!"); // Avslutningsmeddelande
-            Environment.Exit(0); // Stänger ner applikationen
+            double totalMinutes = _stopwatch.Elapsed.TotalMinutes;
+            int totalMonths = (int)(totalMinutes / 5); // 5 minuter = 1 månad
+
+            int years = totalMonths / 12; // Beräkna antal år
+            int months = totalMonths % 12; // Beräkna kvarvarande månader
+
+            return (years, months);
+        }
+
+        // Metod för att skriva ut tiden spelad
+        public void PrintTotalTimePlayed()
+        {
+            var (years, months) = GetTotalTimePlayed();
+            string timeString = "";
+
+            // Formatera utskriften
+            if (years > 0)
+            {
+                timeString += $"{years} år";
+            }
+
+            if (months > 0)
+            {
+                if (years > 0)
+                {
+                    timeString += " och "; // Lägg till "och" om det finns både år och månader
+                }
+                timeString += $"{months} månader";
+            }
+
+            if (timeString == "")
+            {
+                timeString = "Ingen tid spelad"; // Om ingen tid har spelats
+            }
+
+            Console.WriteLine($"Total tid spelad: {timeString}");
         }
 
         // Metod för att initiera scenarier
         private List<Scenario> InitializeScenarios()
         {
+
             return new List<Scenario>
             {
                 new Scenario(
-                    "Som nyinflyttad i Kapitalträsk inser du att dina 30000 SEK inte räcker till särskilt mycket. Först och främst behöver du ha någonstans att bo. Vilket alternativ väljer du?",
+                    "Som nyinflyttad i Kapitalträsk inser du att dina 30000 SEK inte räcker till särskilt mycket.\nFörst och främst behöver du ha någonstans att bo. \nVilket alternativ väljer du?\n",
                     new List<string>
                     {
                         "Bo i en flashig takvåning för 20000 SEK i månaden.",
@@ -136,9 +186,12 @@ namespace MillionaireGame
         // Metod för att hantera spelarnas val i scenarier
         public void StartScenario()
         {
+
             foreach (var scenario in _scenarios)
             {
                 Console.Clear();
+                Player.ShowPlayerInfo(_player);
+                Console.WriteLine("");
                 Console.WriteLine(scenario.Question);
                 for (int i = 0; i < scenario.Options.Count; i++)
                 {
@@ -169,6 +222,18 @@ namespace MillionaireGame
                 Console.WriteLine("Tryck på valfri tangent för att fortsätta...");
                 Console.ReadKey();
             }
+
+        }
+
+        // Metod för att avsluta spelet
+        public void ExitGame()
+        {
+            _stopwatch.Stop(); // Stoppa tidtagaren när spelet avslutas
+            TimeSpan totalTime = _stopwatch.Elapsed; // Hämta den totala tiden
+            Console.Clear();
+            Console.WriteLine("Tack för att du spelade Kapitalets Utmaning!");
+            Console.WriteLine($"Total speltid: {totalTime.Minutes} minuter och {totalTime.Seconds} sekunder.");
+            Environment.Exit(0);
         }
     } // Avslutande klammerparentes för Game-klassen
 } // Avslutande klammerparentes för namespace MillionaireGame

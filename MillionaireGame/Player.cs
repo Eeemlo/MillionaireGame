@@ -15,12 +15,17 @@ namespace MillionaireGame
         public int Karma { get; set; }
         public int SocialStatus { get; set; }
 
-        public Player(string name, double initialCapital, int initialKarma, int initialStatus)
+
+        //Referens till spel
+        private Game _game;
+
+        public Player(string name, double initialCapital, int initialKarma, int initialStatus, Game game)
         {
             Name = name;
             Capital = initialCapital;
             Karma = initialKarma;
             SocialStatus = initialStatus;
+            _game = game;
         }
 
         //Metoder för att uppdatera kapital osv.
@@ -45,13 +50,14 @@ namespace MillionaireGame
         }
 
         //Statisk metod för att visa spelarens information
-        public static void ShowPlayerInfo(Player player)
+        public void ShowPlayerInfo(Player player)
         {
             Console.WriteLine("___________________________");
-            Console.WriteLine($"  Kapitalist: {player.Name}");
-            Console.WriteLine($"  Saldo: {player.Capital}");
-            Console.WriteLine($"  Social status: {player.SocialStatus}");
-            Console.WriteLine($"  Karma: {player.Karma}");
+            Console.WriteLine($"Kapitalist: {player.Name}");
+            Console.WriteLine($"Saldo: {player.Capital}");
+            Console.WriteLine($"Social status: {player.SocialStatus}");
+            Console.WriteLine($"Karma: {player.Karma}");
+            _game.PrintTotalTimePlayed();
             Console.WriteLine("---------------------------");
             Console.WriteLine("");
          

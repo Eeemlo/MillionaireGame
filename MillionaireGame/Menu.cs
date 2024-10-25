@@ -26,7 +26,7 @@ namespace MillionaireGame
             switch (choice)
             {
                 case "1":
-                    game.StartNewGame();
+                    game.GameIntro();
                     game.StartScenario();
                     break;
                 case "2":
