@@ -52,6 +52,7 @@ namespace MillionaireGame
         //Statisk metod för att visa spelarens information
         public void ShowPlayerInfo(Player player)
         {
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("___________________________");
             Console.WriteLine($"Kapitalist: {player.Name}");
             Console.WriteLine($"Saldo: {player.Capital}");
@@ -60,7 +61,10 @@ namespace MillionaireGame
             _game.PrintTotalTimePlayed();
             Console.WriteLine("---------------------------");
             Console.WriteLine("");
-         
+
+            // Återställ färgen till standard
+            Console.ResetColor();
+
         }
     }
 }
