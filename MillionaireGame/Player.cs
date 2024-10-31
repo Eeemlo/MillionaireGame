@@ -53,13 +53,10 @@ namespace MillionaireGame
         public void ShowPlayerInfo(Player player)
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("___________________________");
-            Console.WriteLine($"Kapitalist: {player.Name}");
-            Console.WriteLine($"Saldo: {player.Capital}");
-            Console.WriteLine($"Social status: {player.SocialStatus}");
-            Console.WriteLine($"Karma: {player.Karma}");
+            Console.WriteLine("_____________________________________________________________________________________________________________________");
+            Console.Write($"| Kapitalist: {player.Name} | Saldo: {player.Capital} | Social status: {player.SocialStatus} | Karma: {player.Karma} ");
             _game.PrintTotalTimePlayed();
-            Console.WriteLine("---------------------------");
+            Console.WriteLine("---------------------------------------------------------------------------------------------------------------------");
             Console.WriteLine("");
 
             // Återställ färgen till standard

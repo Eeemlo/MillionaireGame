@@ -50,7 +50,7 @@ namespace MillionaireGame
 
         public static void GameMenu(Game game)
         {
-            Console.WriteLine("------------VART VILL DU GÅ NU?----------------");
+            Console.WriteLine("\n\n------------VART VILL DU GÅ NU?----------------\n");
             Console.WriteLine("1. Bostadsförmedlingen");
             Console.WriteLine("2. Banken");
             Console.WriteLine("3. Börsen");
