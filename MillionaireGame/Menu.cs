@@ -10,6 +10,12 @@ namespace MillionaireGame
 {
     internal class Menu
     {
+        private Player _player; // En referens till spelaren som representerar användarens karaktär i spelet
+
+        public Menu(Player player) // Konstruktör som tar emot en Player-instans
+        {
+            _player = player; // Tilldela den mottagna spelaren till den privata variabeln
+        }
 
         // Huvudmeny
         public static void ShowMainMenu(Game game)
@@ -50,48 +56,50 @@ namespace MillionaireGame
 
         public static void GameMenu(Game game)
         {
+            Console.Clear();
+            game.Player.ShowPlayerInfo(game.Player);
+
             Console.WriteLine("\n\n------------VART VILL DU GÅ NU?----------------\n");
-            Console.WriteLine("1. Bostadsförmedlingen");
-            Console.WriteLine("2. Banken");
-            Console.WriteLine("3. Börsen");
-            Console.WriteLine("4. Monumentet Profitsson");
-            Console.WriteLine("5. Arbetsförmedlingen");
-            Console.WriteLine("6. Nätverksträffen");
-            Console.WriteLine("7. Kafé Kaffe & Kapital");
-            Console.WriteLine("8. Golfklubben");
-            Console.WriteLine("9. Casinot");
+            Console.WriteLine("1. Banken");
+            Console.WriteLine("2. Börsen");
+            Console.WriteLine("3. Monumentet Profitsson");
+            Console.WriteLine("4. Arbetsförmedlingen");
+            Console.WriteLine("5. Vallokalen");
+            Console.WriteLine("6. Kafé Kaffe & Kapital");
+            Console.WriteLine("7. Golfklubben");
+            Console.WriteLine("8. Casinot");
+            Console.WriteLine("9. Välgörenhetsgalan");
 
             string choice = Console.ReadLine();
 
             switch (choice)
             {
                 case "1":
-                    game.StartScenario(0);
-                    break;
-                case "2":
                     game.StartScenario(1);
                     break;
-                case "3":
+                case "2":
                     game.StartScenario(2);
                     break;
-                case "4":
+                case "3":
                     game.StartScenario(3);
                     break;
-                case "5":
+                case "4":
                     game.StartScenario(4);
                     break;
-                case "6":
+                case "5":
                     game.StartScenario(5);
                     break;
-                case "7":
+                case "6":
                     game.StartScenario(6);
                     break;
-                case "8":
+                case "7":
                     game.StartScenario(7);
                     break;
-                case "9":
+                case "8":
                     game.StartScenario(8);
                     break;
+                case "9":
+                    game.StartScenario(9);
                 default:
                     Console.WriteLine("Ogiltigt val, försök igen!");
                     GameMenu(game);

@@ -16,6 +16,7 @@ namespace MillionaireGame
         private List<Scenario> _scenarios;
         private Stopwatch _stopwatch; //Tidtagare
         private double _monthlyRent; //Månadshyra
+        private Menu _menu;
 
         public Player Player // Offentlig egenskap för att komma åt spelaren
         {
@@ -26,6 +27,7 @@ namespace MillionaireGame
         {
             _scenarios = InitializeScenarios();
             _stopwatch = new Stopwatch();
+            _menu = new Menu(_player);
         }
 
 
@@ -88,14 +90,16 @@ namespace MillionaireGame
             Console.WriteLine("enda vägarna till lycka. Under din uppväxt har du matats med budskapet att det som verkligen betyder ");
             Console.WriteLine("något är hur mycket pengar du tjänar och hur snabbt du kan klättra på den kapitalistiska stegen. ");
             Console.WriteLine("");
-            Console.WriteLine("Du bestämmer dig för att flytta till staden Kapitalträsk, där varje beslut kan leda antingen till förmögenhet ");
-            Console.WriteLine("eller fördömelse. Här kan du investera i allt från tvivelaktiga aktier, som ”Slavarbete AB”, till att starta ");
-            Console.WriteLine("företag som säljer ”eksklusiva” skräpföremål. För varför fokusera på kvalitet när kvantitet och snabba ");
-            Console.WriteLine("vinster är det enda som räknas?");
+            Console.WriteLine("Du bestämmer dig för att flytta till staden Kapitalträsk, där varje beslut kan leda antingen till ");
+            Console.WriteLine("förmögenhet eller fördömelse. Här kan du investera i tvivelaktiga aktier, diskutera strategier för ");
+            Console.WriteLine("skattefusk och gå till Casinot.");
             Console.WriteLine("");
-            Console.WriteLine("Spelets mål är att du ska försöka bli miljonär så snabbt som möjligt utan att förlora din själ på vägen. Du ");
-            Console.WriteLine("bjuds in till en värld där din värdegrund ställs på prov och där moral och etik är mer som rekommendationer än regler. ");
-            Console.WriteLine("Klarar du att klättra till toppen utan att offra allt du står för, eller kommer vägen till rikedom att kosta dig din mänsklighet?");
+            Console.WriteLine("Ditt mål är enkelt: bli miljonär. Men inte ens en miljonär står ut med sig själv efter för många ");
+            Console.WriteLine("tvivelaktiga beslut. Om din karma sjunker till noll, är spelet över – ingen summa pengar kan kompensera ");
+            Console.WriteLine("för en tom själ. Kapitalträsk mäter också din sociala status; faller den för lågt kan dina möjligheter ");
+            Console.WriteLine("att mingla med den rätta sortens folk försvinna, och med dem chanserna till de riktigt lönsamma affärerna.");
+            Console.WriteLine("");
+            Console.WriteLine("Så kan du bli stadens nästa miljonär utan att helt förlora dig själv?");
             Console.WriteLine("");
             Console.WriteLine("Tryck på [Enter] för att fortsätta...");
             Console.ReadLine();
@@ -176,8 +180,8 @@ namespace MillionaireGame
             {
                 /*0*/
                 new Scenario(
-                    "BOSTADSFÖRMEDLINGEN",
-                    "En plats där hoppet om ett förstahandskontrakt lever, åtminstone för de få som inte ger upp innan de når pensionsåldern. \nHär förmedlas allt från kvadratmeter-skrubbar till överprisade etagevåningar. \nVilken bostad väljer du?\r\n",
+                    "VÄLKOMMEN TILL BOSTADSFÖRMEDLINGEN",
+                    "Som  nyinflyttad i Kapitalträsk behöver du någonstans att bo. Du har därför tagit dig till bostadsförmedlingen - en \nplats där hoppet om ett förstahandskontrakt lever, åtminstone för de få som inte ger upp innan de når pensionsåldern. \nHär förmedlas allt från kvadratmeter-skrubbar till överprisade etagevåningar. \nVilken bostad väljer du?\r\n",
                     new List <string>
                     {
                         "Takvåningen",
@@ -188,12 +192,14 @@ namespace MillionaireGame
                    new List<string>
                     {
                         "Slå till på en överprisad takvåning för 25,000 SEK i månaden – komplett med minimalistisk inredning och en designad \nkaffemaskin som du inte vet hur man använder. Dina rika grannar är SÅÅ imponerade, eller ja... de låtsas åtminstone \natt de vet vem du är.",
-                        "Flytta in i en andrahandstvåa på 50 kvm för 10,000 SEK i månaden. Helt okej komfort, och ingen behöver veta att ditt 'kontor' \negentligen är matbordet. Du kanske inte vinner några sociala statuspoäng hos toppfolket, men grannarna nickar artigt \ni trapphuset.",
+                        "Flytta in i en andrahandstvåa på 50 kvm för 10,000 SEK i månaden. Helt okej komfort, och ingen behöver veta att ditt \n'kontor' egentligen är matbordet. Du kanske inte vinner några sociala statuspoäng hos toppfolket, men grannarna \nnickar artigt i trapphuset.",
                         "Bo i ett kollektiv med stadens mest omtänksamma själar. Där delas såväl ekologiska grönsaker som djupa samtal om \norättvisor. Visst, du riskerar att bli utstött av stadens kostymklädda opportunister, men ekonomiskt är det ju en \nvinst!"
                     },
-                    new List<double> { -20000, -10000, 0 }, //Ekonomisk påverkan
+                    
                     new List<int> { -5, +1, +5 }, // Karmapåverkan
-                    new List<int> { +5, +2, -10 } // Social påverkan
+                    new List<int> { +5, +2, -10 }, // Social påverkan
+                    new List<double?> { -20000, -10000, 0 }, //Ekonomisk påverkan
+                    new List<double?> { null, null, null } //Procentuell påverkan på investerat kapital
 
                 ),
                 /*1*/
@@ -206,158 +212,195 @@ namespace MillionaireGame
                     },
                     new List<string>
                     {
-                        "Du får en fantastisk ränta på 0,01% – perfekt för att se dina besparingar förvandlas till en skugga av vad de en gång \nvar! Kom ihåg: ju mer du sparar, desto mindre kan du faktiskt köpa. \nEn garanterad förlust i kampen mot inflationen!"
+                        "Du får en fantastisk ränta på 0,01% – perfekt för att se dina besparingar förvandlas till en skugga av vad de en gång \nvar! En garanterad förlust i kampen mot inflationen!"
                     },
-                    new List<double> { -15000}, //Ekonomisk påverkan
-                    new List<int> { -5 }, // Karmapåverkan
-                    new List<int> { -10 } // Social påverkan (exempelvärden)
+                    new List<int> {0}, // Karmapåverkan
+                    new List<int> {0}, // Social påverkan (exempelvärden)
+                    new List<double?> { null }, // Ekonomisk påverkan som nullable
+                    new List<double?> {0.001} //Återbäring
                 ),
                 /*2*/
                   new Scenario(
                       "BÖRSEN",
-                    "Här är snabba affärer och spekulationer regel snarare än undantag, och de privilegierade spelar ett riskfyllt spel med andras \nframtid. Medan finansvärlden jublar över sina vinster, kämpar många med att få ekonomin att gå \nihop. Välkommen till cirkusen där de få blir rika på de många – om du vågar delta..\nVad vill du investera i?\r\n",
+                    "Här är snabba affärer och spekulationer regel snarare än undantag, och de privilegierade spelar ett riskfyllt spel med \nandras framtid. Medan finansvärlden jublar över sina vinster, kämpar många med att få ekonomin att gå ihop. Välkommen \ntill cirkusen där de få blir rika på de många – om du vågar delta..\nVad vill du investera i?\r\n",
                                         new List <string>
                     {
-                        "Fluff & Fusk AB",
+                        "Makt & Profit AB",
                         "Arbetsmiljökatastrof AB",
-                        "Slit & släng AB"
+                        "Slit & släng Mode AB"
                     },
                     new List<string>
                     {
-                        "Hylla Profitsson och delta i en ‘Monumentfotoutmaning’: “Fotografera dig själv vid monumentet och posta med en hyllningstext. En okänd sponsor belönar fotot.” (Social Status +5, Kapital +5000 SEK, Karma -5)",
-                        "Strunta i monumentet och gå vidare: “Du ignorerar hela spektaklet, vilket låter dig undvika både bra och dåliga reaktioner.” (Social Status 0, Kapital +0, Karma +2)",
-                        "Placera en Protestskylt: “Du gör din röst hörd genom att sätta upp en protestskylt vid monumentet, vilket lockar uppmärksamhet från en lokal aktivistgrupp som erbjuder dig en symbolisk belöning.” (Karma +5, Social Status -3, Kapital +500 SEK)"
+                        "Ett företag som är djupt involverat i den globala vapenhandeln och försörjer nationer som prioriterar styrka framför \nfred. Med starka kopplingar till maktgalna regimer erbjuder de en rad produkter och tjänster som hjälper dessa \nländer att stärka sin militära kapacitet. Men hey, det man inte ser själv lider man inte av.. Eller hur?",
+                        "Detta företag har blivit känt för sina usla arbetsvillkor och cyniska affärsstrategier. Genom att drastiskt reducera \npersonalstyrkan har de kvarvarande anställda tvingats arbeta dygnet runt, utan möjlighet till pauser. För ledningen \nhandlar allt om att maximera vinsten på bekostnad av sina anställdas hälsa och välbefinnande.",
+                        "Företaget erbjuder kläder som är avsedda att användas en gång och sedan kastas bort, vilket är helt i enlighet med \nsamhällets norm. Med lockande priser och ständigt nya kollektioner står de i centrum av en modeindustri som \nprioriterar kvantitet framför kvalitet. "
                     },
-                    new List<double> { -15000, -12000, -8000 },
-                    new List<int> { -5, -2, 0 }, // Karma påverkan (exempelvärden)
-                    new List<int> { -10, -5, 0 } // Social påverkan (exempelvärden)
+                    
+                    new List<int> { -10, -7, -5 }, // Karma påverkan (exempelvärden)
+                    new List<int> { +5, +5, +5 }, // Social påverkan (exempelvärden)
+                    new List<double?> { null, null, null },
+                    new List<double?> {0.7, 0.5, 0.4} //Återbäring
                 ),
                   /*3*/
                    new Scenario(
                       "MONUMENTET PROFITSSON",
-                    "Monumentet hyllar den kontroversiella industrimagnaten Torsten Profitsson, vars förmögenhet byggdes på girighet och exploatering. \nOmrådet är en pulserande knutpunkt för både beundrare som vill föreviga sig själva i Profitssons skugga och \naktivister som tar ställning mot hans arv. Välkommen till platsen där moral och makt krockar, och \ndär varje besökare tvingas välja sida.\nVad väljer du?\r\n",
+                    "Monumentet hyllar den kontroversiella industrimagnaten Torsten Profitsson, vars förmögenhet byggdes på girighet och \nexploatering. Området är en pulserande knutpunkt för både beundrare som vill föreviga sig själva i Profitssons skugga \noch aktivister som tar ställning mot hans arv. Välkommen till platsen där moral och makt krockar, och \ndär varje besökare tvingas välja sida.\nVad väljer du?\r\n",
                                        new List <string>
                     {
-                        "Takvåningen",
-                        "Andrahandstvåan",
-                        "Kollektivet"
+                        "Monumentfotoutmaning",
+                        "Ignorera Monumentet",
+                        "Sätt upp en protestskylt"
                     },
                     new List<string>
                     {
-                        "Hylla Profitsson och delta i en ‘Monumentfotoutmaning’: “Fotografera dig själv vid monumentet och posta med en hyllningstext. En okänd sponsor belönar fotot.” (Social Status +5, Kapital +5000 SEK, Karma -5)",
-                        "Strunta i monumentet och gå vidare: “Du ignorerar hela spektaklet, vilket låter dig undvika både bra och dåliga reaktioner.” (Social Status 0, Kapital +0, Karma +2)",
-                        "Placera en Protestskylt: “Du gör din röst hörd genom att sätta upp en protestskylt vid monumentet, vilket lockar uppmärksamhet från en lokal aktivistgrupp som erbjuder dig en symbolisk belöning.” (Karma +5, Social Status -3, Kapital +500 SEK)"
+                        "Hylla Profitsson och delta i en Monumentfotoutmaning genom att otografera dig själv vid monumentet och posta med \nhashtagen #InspiredByProfitsson. En okänd sponsor belönar fotot med 1000 kr!",
+                        "Strunta i monumentet och gå vidare, du låter dig undvika både bra och dåliga reaktioner.",
+                        "Du gör din röst hörd genom att sätta upp en protestskylt vid monumentet, vilket lockar uppmärksamhet från en lokal \naktivistgrupp som erbjuder dig en symbolisk belöning om 500 kronor."
                     },
-                    new List<double> { -15000, -12000, -8000 },
-                    new List<int> { -5, -2, 0 }, // Karma påverkan (exempelvärden)
-                    new List<int> { -10, -5, 0 } // Social påverkan (exempelvärden)
+                    
+                    new List<int> { -10, 0, +10 }, // Karma påverkan (exempelvärden)
+                    new List<int> { +10, 0, -10 }, // Social påverkan (exempelvärden) 
+                                        new List<double?> { +1000, 0, +500 },
+                    new List<double?> {null, null, null} //Återbäring
                 ),
                    /*4*/
                     new Scenario(
                       "ARBETSFÖRMEDLINGEN",
-                    "Här samlas arbetssökande i hopp om jobb, men ofta möts de av ett virrvarr av byråkrati och systematiska brister. Medan några får \nhjälp att navigera, lämnas många kvar i limbo, bortglömda av systemet. Välkommen till platsen där hopp \noch besvikelse dansar en ständig tango..\nVill du skaffa ett jobb?\r\n",
+                    "Här samlas arbetssökande i hopp om jobb, men ofta möts de av ett virrvarr av byråkrati och systematiska brister. Medan \nnågra får hjälp att navigera, lämnas många kvar i limbo, bortglömda av systemet. Välkommen till platsen där hopp \noch besvikelse dansar en ständig tango..\nVill du skaffa ett jobb?\r\n",
                                         new List <string>
                     {
-                        "Takvåningen",
-                        "Andrahandstvåan",
-                        "Kollektivet"
+                        "Telefonförsäljare för UnicornWonders",
+                        "Städare på skandalhotell",
+                        "PR-koordinator på Lifestyle-byrå"
                     },
                     new List<string>
                     {
-                        "Hylla Profitsson och delta i en ‘Monumentfotoutmaning’: “Fotografera dig själv vid monumentet och posta med en hyllningstext. En okänd sponsor belönar fotot.” (Social Status +5, Kapital +5000 SEK, Karma -5)",
-                        "Strunta i monumentet och gå vidare: “Du ignorerar hela spektaklet, vilket låter dig undvika både bra och dåliga reaktioner.” (Social Status 0, Kapital +0, Karma +2)",
-                        "Placera en Protestskylt: “Du gör din röst hörd genom att sätta upp en protestskylt vid monumentet, vilket lockar uppmärksamhet från en lokal aktivistgrupp som erbjuder dig en symbolisk belöning.” (Karma +5, Social Status -3, Kapital +500 SEK)"
+                        "Jobbet går ut på att ringa ensamma pensionärer och övertyga dem om att prenumerera på månatliga enhörningshattar! \nVarje köp sägs ge “ungdomlig energi”. Hög provision väntar, men kollegorna varnar för besvärade anhöriga. ",
+                        "Som hotellstädare på stadens ökända skandalhotell kommer du att få uppleva glansen av en aldrig avslutad fest! \nFörutom att hantera spår från gårdagens VIP-gäster – ett smörgåsbord av märkliga fläckar, övergivna \ndyrgripar och en och annan söndrig minibar – ingår även sanering av rykande toaletter och omsorgsfullt bortplockande \nav opassande souvenirer.",
+                        "Din uppgift är att skriva pressmeddelanden, kalla till event och springa runt och ordna allt från lyxiga goodiebags \ntill platser på trendiga restauranger. Lönen må vara knapp, men du får chans att “bygga ditt nätverk” \noch, om du har tur, ta en selfie i minglet för dina egna sociala medier."
                     },
-                    new List<double> { -15000, -12000, -8000 },
-                    new List<int> { -5, -2, 0 }, // Karma påverkan (exempelvärden)
-                    new List<int> { -10, -5, 0 } // Social påverkan (exempelvärden)
+
+                    new List<int> { -10, +5, +5 }, // Karma påverkan (exempelvärden)
+                    new List<int> { -10, -10, -5 }, // Social påverkan (exempelvärden)
+                                        new List<double?> { +20000, +10000, +1000 },
+                    new List<double?> {null, null, null} //Återbäring
                 ),
                     /*5*/
                      new Scenario(
-                      "NÄTVERKSTRÄFFEN",
-                    "En exklusiv tillställning där självgoda entreprenörer samlas för att utbyta visitkort och prisa sin senaste ”geniala” affärsidé. \nHär flödar champagnen medan det diskuteras hur man ska maximera vinsten utan att blanda in tankar om etik eller socialt ansvar. \nVälkommen till en arena där relationer är allt och där de som har mest kapital alltid får sista ordet.\nVad vill du göra här?\r\n",
+                      "VALLOKALEN",
+                    "Välkommen till vallokalen, där den demokratiska illusionen frodas! Här har du chansen att rösta på ett av tre \nfantastiska partier – välj klokt, för din framtid hänger på att du gör det bästa valet bland det sämsta \nsom erbjuds! Lägg en röst vetja!\r\n",
                                         new List <string>
                     {
-                        "Takvåningen",
-                        "Andrahandstvåan",
-                        "Kollektivet"
+                        "Framgångspartiet (FP)",
+                        "Partiet för öppen exkludering (PFÖE)",
+                        "Kollektiva partiet (KP)"
                     },
                     new List<string>
                     {
-                        "Hylla Profitsson och delta i en ‘Monumentfotoutmaning’: “Fotografera dig själv vid monumentet och posta med en hyllningstext. En okänd sponsor belönar fotot.” (Social Status +5, Kapital +5000 SEK, Karma -5)",
-                        "Strunta i monumentet och gå vidare: “Du ignorerar hela spektaklet, vilket låter dig undvika både bra och dåliga reaktioner.” (Social Status 0, Kapital +0, Karma +2)",
-                        "Placera en Protestskylt: “Du gör din röst hörd genom att sätta upp en protestskylt vid monumentet, vilket lockar uppmärksamhet från en lokal aktivistgrupp som erbjuder dig en symbolisk belöning.” (Karma +5, Social Status -3, Kapital +500 SEK)"
+                        "Rösta på oss för en skattelättnad på 20 000 kronor! Visst, barn, äldre och sjuka kanske drabbas av en tynande välfärd, \nmen det påverkar ju inte dig. Låt din framgång vara det enda som räknas!",
+                        "Vi skapar en värld där alla som passar in i vår snäva mall får sin plats – resten får gärna stanna utanför. En röst \npå oss innebär 10 000 kronor mer i din plånbok tack vare vår effektiviserade integrationsstrategi som \nprioriterar avhumanisering framför empati.",
+                        "Vi skapar en värld där miljö och välfärd går hand i hand. Genom att rösta på oss bidrar du till en grönare framtid, \nmed investeringar i hållbara lösningar och ett stärkt socialt skyddsnät. Din skatt går till att förbättra \nlivskvaliteten för alla, med fokus på ren energi, utbildning och sjukvård. Du betalar 5 000 kronor \nmer i skatt som gör du en betydande skillnad för samhället."
                     },
-                    new List<double> { -15000, -12000, -8000 },
-                    new List<int> { -5, -2, 0 }, // Karma påverkan (exempelvärden)
-                    new List<int> { -10, -5, 0 } // Social påverkan (exempelvärden)
+
+                    new List<int> { -10, -10, 0 }, // Karma påverkan (exempelvärden)
+                    new List<int> { +10, +5, 0 }, // Social påverkan (exempelvärden)
+                                        new List<double?> { +20000, +10000, -5000 }, //Fast ekonomisk påverkan
+                    new List<double?> {null, null, null} //Återbäring
                 ),
                      /*6*/
                       new Scenario(
                       "KAFÉ KAFFE & KAPITAL",
-                    "Kaféet är det självklara valet för den som vill njuta av en överprisad espresso medan de diskuterar hur man kan maximera sin vinst \npå bekostnad av allt annat. Här samlas eliten för att prata affärer, medan de sippar på drycker som hade kunnat betala \nen månads hyra för en ensamstående förälder i förorten.\nVad vill du göra?\r\n",
+                    "Kaféet är det självklara valet för den som vill njuta av en överprisad espresso medan de diskuterar hur man kan \nmaximera sin vinst på bekostnad av allt annat. Här samlas eliten för att prata affärer, medan de sippar på \ndrycker som hade kunnat betala en månads hyra för en ensamstående förälder i förorten.\nVad vill du göra?\r\n",
                                         new List <string>
                     {
-                        "Takvåningen",
-                        "Andrahandstvåan",
-                        "Kollektivet"
+                        "Bli kaffe-influencer",
+                        "Sälj in din egenskapade kaffesyrup",
+                        "hej"
                     },
                     new List<string>
                     {
-                        "Hylla Profitsson och delta i en ‘Monumentfotoutmaning’: “Fotografera dig själv vid monumentet och posta med en hyllningstext. En okänd sponsor belönar fotot.” (Social Status +5, Kapital +5000 SEK, Karma -5)",
-                        "Strunta i monumentet och gå vidare: “Du ignorerar hela spektaklet, vilket låter dig undvika både bra och dåliga reaktioner.” (Social Status 0, Kapital +0, Karma +2)",
-                        "Placera en Protestskylt: “Du gör din röst hörd genom att sätta upp en protestskylt vid monumentet, vilket lockar uppmärksamhet från en lokal aktivistgrupp som erbjuder dig en symbolisk belöning.” (Karma +5, Social Status -3, Kapital +500 SEK)"
+                        "Bli en kaffe-influencer och åk runt till olika kaféer för att promota deras överprisade kaffe som 'sååå lyxigt och \nprisvärt'. Dela dina upplevelser på sociala medier och tjäna 5 000 kr för varje kopp du recenserar!",
+                        "Sälj in din egen sirap med den förbluffande smaken av fuktig kattsträva! Perfekt för att förvandla vilken dryck som \nhelst till en vild smakupplevelse. Tjäna 7 000 kronor på att göra denna udda delikatess till en hit på \nkaféet!",
+                        "hej"
                     },
-                    new List<double> { -15000, -12000, -8000 },
-                    new List<int> { -5, -2, 0 }, // Karma påverkan (exempelvärden)
-                    new List<int> { -10, -5, 0 } // Social påverkan (exempelvärden)
+                    
+                    new List<int> { -5, 0, 0}, // Karma påverkan (exempelvärden)
+                    new List<int> { +5, +8, 0}, // Social påverkan (exempelvärden)
+                                        new List<double?> { 5000, 7000, 50},
+                    new List<double?> {null, null, null} //Återbäring
                 ),
                       /*7*/
                        new Scenario(
                       "GOLFKLUBBEN",
-                    "Golfklubben är en fristad för de som älskar att slå på en liten boll medan de diskuterar hur de kan förädla sina skattefuskstrategier. \nHär klipper man gräset lika noggrant som man klipper bort de oönskade medlemmarna – du vet, de som fortfarande tror på jämlikhet. \nVad vill du göra?\r\n",
+                    "Golfklubben är en fristad för de som älskar att slå på en liten boll medan de diskuterar hur de kan förädla sina \nskattefuskstrategier. Här klipper man gräset lika noggrant som man klipper bort de oönskade medlemmarna – du vet, \nde som fortfarande tror på jämlikhet. Vad vill du göra?\r\n",
                                         new List <string>
                     {
-                        "Takvåningen",
-                        "Andrahandstvåan",
-                        "Kollektivet"
+                        "Anordna en föreläsning",
+                        "Investera i luftslott",
+                        "Ta ett jobb som caddy"
                     },
                     new List<string>
                     {
-                        "Hylla Profitsson och delta i en ‘Monumentfotoutmaning’: “Fotografera dig själv vid monumentet och posta med en hyllningstext. En okänd sponsor belönar fotot.” (Social Status +5, Kapital +5000 SEK, Karma -5)",
-                        "Strunta i monumentet och gå vidare: “Du ignorerar hela spektaklet, vilket låter dig undvika både bra och dåliga reaktioner.” (Social Status 0, Kapital +0, Karma +2)",
-                        "Placera en Protestskylt: “Du gör din röst hörd genom att sätta upp en protestskylt vid monumentet, vilket lockar uppmärksamhet från en lokal aktivistgrupp som erbjuder dig en symbolisk belöning.” (Karma +5, Social Status -3, Kapital +500 SEK)"
+                        "Håll en föreläsning om hur man kan använda sina golfaktiviteter för att skapa avdrag i skattedeklarationen. Tjäna \n10 000 kr genom att sälja biljetter till denna exklusiva session.",
+                        "Bjud ut två av dina manliga affärskontakter på en golfrunda. Under spelets gång öppnar sig möjligheten att investera \ni ett nystartat företag som säljer luftslott. Garanterat 100% i avkastning!",
+                        "Som caddy får du chansen att gå i elitens fotspår – bokstavligt talat! Tjäna 15 000 kr på att bära deras tunga \nklubbor medan du elegant undviker deras ständiga skrytande om framgångar och affärer."
                     },
-                    new List<double> { -15000, -12000, -8000 },
+                   
                     new List<int> { -5, -2, 0 }, // Karma påverkan (exempelvärden)
-                    new List<int> { -10, -5, 0 } // Social påverkan (exempelvärden)
+                    new List<int> { +10, +5, 0 }, // Social påverkan (exempelvärden)
+                                        new List<double?> { 10000, null, 15000 },
+                    new List<double?> {null, 1, null} //Återbäring
                 ),
                        /*8*/
                         new Scenario(
                       "CASINOT",
-                    "Casinot är en glittrande oas för de som har råd att leka med sina drömmar. Här kastas pengar bort som konfetti i en fest där lycka \när en kortvarig gäst. Med varje kortdragning och snurr glöms den ekonomiska verkligheten bort i jakten \npå jackpottar, men de flesta lämnar med tomma fickor och dyra minnen.\nVad vill du göra?\r\n",
+                    "Casinot är en glittrande oas för de som har råd att leka med sina drömmar. Här kastas pengar bort som konfetti i en \nfest där lycka är en kortvarig gäst. Med varje kortdragning och snurr glöms den ekonomiska verkligheten bort i \njakten på jackpottar, men de flesta lämnar med tomma fickor och dyra minnen. Vad vill du göra?\r\n",
                                        new List <string>
                     {
-                        "Takvåningen",
-                        "Andrahandstvåan",
-                        "Kollektivet"
+                        "Spela roulette",
+                        "Spela sic bo",
+                        "Spela på enarmad bandit"
                     },
                     new List<string>
                     {
-                        "Hylla Profitsson och delta i en ‘Monumentfotoutmaning’: “Fotografera dig själv vid monumentet och posta med en hyllningstext. En okänd sponsor belönar fotot.” (Social Status +5, Kapital +5000 SEK, Karma -5)",
-                        "Strunta i monumentet och gå vidare: “Du ignorerar hela spektaklet, vilket låter dig undvika både bra och dåliga reaktioner.” (Social Status 0, Kapital +0, Karma +2)",
-                        "Placera en Protestskylt: “Du gör din röst hörd genom att sätta upp en protestskylt vid monumentet, vilket lockar uppmärksamhet från en lokal aktivistgrupp som erbjuder dig en symbolisk belöning.” (Karma +5, Social Status -3, Kapital +500 SEK)"
+                        "Sätt dina marker på bordet och känn pulsen stiga! Här har du 50% chans att dubbla dina satsade pengar. Kommer du att \nse rött eller svart?",
+                        "Satsa på tärningarnas utfall i detta spännande tärningsspel! Om du satsar på ett specifikt nummer och vinner, kan du \nfå upp till 6 gånger din insats! Det är tur som gäller när tärningarna rullas!",
+                        "Dra i spaken och hoppas på det bästa! Här har du endast 1% chans att vinna hela 10 gånger din satsning. Kommer du att \nbli den lyckliga som går hem med storvinsten, eller är du bara ännu en spelare som lämnar med tomma fickor?"
                     },
-                    new List<double> { -15000, -12000, -8000 },
-                    new List<int> { -5, -2, 0 }, // Karma påverkan (exempelvärden)
-                    new List<int> { -10, -5, 0 } // Social påverkan (exempelvärden)
+                    
+                    new List<int> { 0, 0, 0 }, // Karma påverkan (exempelvärden)
+                    new List<int> { -1, -1, -1 }, // Social påverkan (exempelvärden)
+                                        new List<double?> { null, null, null },
+                    new List<double?> {null, null, null} //Återbäring
+                ),
+                                               /*8*/
+                        new Scenario(
+                      "VÄLGÖRENHETSGALAN",
+                    "Välgörenhetsgalan anordnas för att hjälpa stadens utsatta och samla in medel till lokala välgörenhetsorganisationer. \nDeltagarna får möjlighet att bidra till olika ändamål som stödjer utbildning för barn, djurens välbefinnande och \nmiljöskydd. Varje donation gör en skillnad! \r\n",
+                                       new List <string>
+                    {
+                        "Donera till Barnens Framtid",
+                        "Stöd Djurens Hem",
+                        "Bidra till miljöinsatser"
+                    },
+                    new List<string>
+                    {
+                        "Det kanske inte ligger i din natur att donera dina surt förvärvade slantar – du måste ju försörja ditt dyra leverne! \nMen vad gör man inte för en rejäl karmaboost? Med en donation på 10 000 kronor kan du ge barn i utsatthet en chans \ntill utbildning och en bättre framtid.",
+                        "För 4 000 kronor kan du ge hemlösa djur en trygg plats. Visst kan det kännas jobbigt att släppa ifrån dig en del av \nditt hårt tjänade kapital, men tänk på att även de fyrbenta vännerna förtjänar en chans. Karma i retur, kanske?",
+                        "Till och med 500 kronor kan kännas jobbigt att skänka... Men det är bättre än att bara klaga. Ditt stöd hjälper till \natt bevara planeten – och kanske ger det din karma en uppgradering inför nästa semester. Varför inte?"
+                    },
+
+                    new List<int> { +20, +5, +2 }, // Karma påverkan (exempelvärden)
+                    new List<int> { 0, 0, 0 }, // Social påverkan (exempelvärden)
+                                        new List<double?> { -10000, -4000, -500 },
+                    new List<double?> {null, null, null} //Återbäring
                 ),
             };
 
             return scenarios; // Returnera listan av scenarier
         }
 
-        // Metod för att hantera spelarnas val i scenarier
+
         public void StartScenario(int scenarioIndex)
         {
             // Kolla att indexet är giltigt
@@ -367,115 +410,420 @@ namespace MillionaireGame
                 return;
             }
 
-            var scenario = _scenarios[scenarioIndex]; // Hämta det aktuella scenariot
             Console.Clear();
             Player.ShowPlayerInfo(_player);
+
+            var scenario = _scenarios[scenarioIndex];
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"{scenario.Localisation}");
             Console.WriteLine($"\n{scenario.Question}");
             Console.ResetColor();
-            scenario.showImpacts();
+            scenario.ShowImpacts();
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Ange [1], [2] eller [3] för att göra ditt val..");
+            Console.WriteLine("Ange siffran för ditt val eller tryck [0] för att gå tillbaka till spelmeny..");
             Console.ResetColor();
 
-            int optionIndex = -1; // Variabel för spelarens val
+            int optionIndex = GetValidOption(scenario); // Hämta giltigt val
 
-            // Använd en while-loop för att hantera ogiltiga val
+            // Hantera scenariot baserat på om det har avkastning eller ej
+            if (HasReturn(scenario, optionIndex))
+            {
+                HandleInvestmentScenario(scenario, optionIndex); // Hantera scenarion med investering
+            }
+            else
+            {
+                HandleNonReturnScenario(scenario, optionIndex); // Hantera scenarion utan avkastning
+            }
+        }
+
+        // Hämta ett giltigt alternativ från användaren
+        private int GetValidOption(Scenario scenario)
+        {
+            int optionIndex = -1;
             while (optionIndex < 0 || optionIndex >= scenario.Options.Count)
             {
                 string choice = Console.ReadLine();
-                // Validera spelarens val
+                if (choice == "0")
+                {
+                    Menu.GameMenu(this);
+                    return -1; // Returnera ogiltigt värde för att signalera att användaren valt att gå tillbaka
+                }
+
                 if (int.TryParse(choice, out optionIndex) && optionIndex > 0 && optionIndex <= scenario.Options.Count)
                 {
-                    optionIndex--; // Justera för att passa indexet i listan
-
-                    // Hämta påverkan baserat på spelarens val
-                    double financialImpact = scenario.FinancialImpacts[optionIndex];
-                    int karmaImpact = scenario.KarmaImpacts[optionIndex];
-                    int socialImpact = scenario.SocialImpacts[optionIndex];
-
-                    // Kontrollera om det är bankens scenario och om det är valet att spara
-                    if (scenarioIndex == 1 && optionIndex == 0) // 0 representerar alternativet att spara
-                    {
-                        SaveMoney(); // Anropa metoden för att spara pengar
-                    }
-                    else
-                    {
-                        // Om användaren inte valde att spara, uppdatera spelarens status
-                        _player.UpdateCapital(financialImpact);
-                        _player.UpdateKarma(karmaImpact);
-                        _player.UpdateSocialStatus(socialImpact);
-
-                        // Visa resultatet av spelarens val
-                        Console.Clear();
-                        Player.ShowPlayerInfo(_player);
-                        Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.");
-                        Console.WriteLine($"\nEkonomisk påverkan: {financialImpact} SEK.");
-                        Console.WriteLine($"Karmapåverkan: {karmaImpact}.");
-                        Console.WriteLine($"Påverkan på social status: {socialImpact}.");
-                        Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
-                        Console.ReadKey();
-                    }
-
-                    // Gå till spelmeny
-                    Menu.GameMenu(this);
-
+                    optionIndex--; // Justera för index
                 }
                 else
                 {
                     Console.WriteLine("Ogiltigt val. Försök igen.");
-                    optionIndex = -1; // Återställ val
+                    optionIndex = -1;
                 }
             }
-
-
-            Console.WriteLine("");
-            Console.WriteLine("Tryck på valfri tangent för att fortsätta...");
-            Console.ReadKey();
+            return optionIndex;
         }
 
-        // Metod för att hantera sparande på räntekonto
-        private void SaveMoney()
+        // Kontrollera om scenariot har en procentuell avkastning
+        private bool HasReturn(Scenario scenario, int optionIndex)
         {
-            Console.Write("Hur mycket vill du spara? (SEK): ");
-            string input = Console.ReadLine();
-            double savingAmount;
+            return scenario.Returns != null && scenario.Returns.Count > optionIndex && scenario.Returns[optionIndex] != null;
+        }
 
-            // Validera input och kontrollera att sparbeloppet är giltigt
-            if (double.TryParse(input, out savingAmount) && savingAmount > 0)
+        // Hantera scenarion med investering och procentuell avkastning
+        private void HandleInvestmentScenario(Scenario scenario, int optionIndex)
+        {
+            Console.Clear();
+            Player.ShowPlayerInfo(_player);
+
+            Console.WriteLine($"Hur mycket vill du investera i {scenario.OptionName[optionIndex]}?");
+            double investmentAmount;
+
+            while (!double.TryParse(Console.ReadLine(), out investmentAmount) || investmentAmount <= 0 || investmentAmount > _player.Capital)
+            {
+                Console.WriteLine(investmentAmount > _player.Capital
+                    ? "Du har inte tillräckligt med kapital för denna investering. Försök igen."
+                    : "Ogiltigt belopp. Ange ett positivt belopp för din investering.");
+            }
+
+            //Hämta avkastningen
+            double returnRate = scenario.Returns[optionIndex].Value;
+            double profit = investmentAmount * returnRate;
+
+            // Hämta karma- och social påverkan
+            int karmaImpact = scenario.KarmaImpacts[optionIndex]; // Hämta karmapåverkan från listan
+            int socialImpact = scenario.SocialImpacts[optionIndex]; // Hämta social påverkan från listan
+
+            _player.UpdateCapital(profit); // Lägg till vinsten
+            _player.UpdateKarma(karmaImpact);
+            _player.UpdateSocialStatus(socialImpact);
+            CheckGameStatus(_player);
+
+            Console.Clear();
+            Player.ShowPlayerInfo(_player);
+            Console.WriteLine($"Du har investerat {investmentAmount:F2} SEK i {scenario.OptionName[optionIndex]}.");
+            Console.WriteLine($"Din avkastning blev {profit:F2} SEK.");
+            Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
+            Console.ReadKey();
+
+            Menu.GameMenu(this); // Återgå till menyn
+        }
+
+        private void HandleNonReturnScenario(Scenario scenario, int optionIndex)
+        {
+            // Kontrollera om detta är ett casinospel utan ekonomisk påverkan eller avkastning
+            if ((scenario.FinancialImpacts == null || scenario.FinancialImpacts.Count == 0) &&
+                (scenario.Returns == null || scenario.Returns.Count == 0))
+            {
+                switch (optionIndex)
+                {
+                    case 0:
+                        PlayRoulette();
+                        break;
+                    case 1:
+                        PlaySicBo();
+                        break;
+                    case 2:
+                        PlayBandit();
+                        break;
+                    default:
+                        Console.WriteLine("Ogiltigt val.");
+                        break;
+                }
+                // Efter att ha spelat, återgå till menyn
+                Menu.GameMenu(this);
+                return; // Avsluta för att undvika att fortsätta nedan
+            }
+
+            // Annars, hantera vanliga scenarion utan avkastning
+            double financialImpact = scenario.FinancialImpacts != null && optionIndex < scenario.FinancialImpacts.Count
+                ? scenario.FinancialImpacts[optionIndex] ?? 0 : 0;
+
+            int karmaImpact = scenario.KarmaImpacts != null && optionIndex < scenario.KarmaImpacts.Count
+                ? scenario.KarmaImpacts[optionIndex] : 0;
+
+            int socialImpact = scenario.SocialImpacts != null && optionIndex < scenario.SocialImpacts.Count
+                ? scenario.SocialImpacts[optionIndex] : 0;
+
+            _player.UpdateCapital(financialImpact);
+            _player.UpdateKarma(karmaImpact);
+            _player.UpdateSocialStatus(socialImpact);
+            CheckGameStatus(_player);
+
+            Console.Clear();
+            Player.ShowPlayerInfo(_player);
+            Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.\n");
+            Console.WriteLine($"Ekonomisk påverkan: {financialImpact} SEK.");
+            Console.WriteLine($"Karmapåverkan: {karmaImpact}.");
+            Console.WriteLine($"Påverkan på social status: {socialImpact}.");
+            Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
+            Console.ReadKey();
+
+            // Återgå till menyn efter att ha hanterat påverkan
+            Menu.GameMenu(this);
+        }
+
+
+        //Metod för att hantera spel på roulette
+        private void PlayRoulette()
+        {
+            Console.Clear();
+            Console.WriteLine("Vill du satsa på [1] rött eller [2] svart?");
+            string colorChoice = Console.ReadLine();
+
+            if (colorChoice != "1" && colorChoice != "2")
+            {
+                Console.WriteLine("Ogiltigt val. Försök igen!");
+                return;
+            }
+
+            Console.WriteLine("Vilken summa vill du satsa?");
+            string input = Console.ReadLine();
+            double investmentAmount;
+
+            if (double.TryParse(input, out investmentAmount) || investmentAmount <= 0)
             {
                 // Kontrollera att spelaren har tillräckligt med kapital för att spara det angivna beloppet
-                if (savingAmount <= _player.Capital) 
+                if (investmentAmount <= _player.Capital)
                 {
-                    double interestRate = 0.0001; // 0.01% ränta
-                    double interestEarned = savingAmount * interestRate;
+                    //Slumpa resultat av roulette
+                    Random rand = new Random();
+                    int winningColor = rand.Next(1, 3); // 1= röd, 2 = svart
 
-                    // Uppdatera spelarens kapital med enbart räntan
-                    _player.UpdateCapital(interestEarned); // Lägg bara till räntan
+                    // Hämta scenario för att få påverkan
+                    var scenario = _scenarios[8];
 
-                    // Visa meddelanden till spelaren
-                    Console.WriteLine($"Du har valt att spara {savingAmount} SEK.");
-                    Console.WriteLine($"Räntan på ditt sparande blir {interestEarned:F2} SEK.");
-                    Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK."); // Visar det nuvarande kapitalet
+                    if (colorChoice == winningColor.ToString())
+                    {
+                        Console.WriteLine($"Grattis, du vann {investmentAmount * 2} SEK!");
+                        _player.UpdateCapital(investmentAmount * 2);
+                        _player.UpdateKarma(scenario.KarmaImpacts[0]);
+                        _player.UpdateSocialStatus(scenario.SocialImpacts[0]);
+                        CheckGameStatus(_player);
+                        Console.Clear();
+                        Player.ShowPlayerInfo(_player);
+                        CheckGameStatus(_player);
+                        Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Tyvärr, du förlorade de {investmentAmount} SEK du satsade");
+                        _player.UpdateCapital(-investmentAmount);
+                        _player.UpdateKarma(scenario.KarmaImpacts[0]);
+                        _player.UpdateSocialStatus(scenario.SocialImpacts[0]);
+                        CheckGameStatus(_player);
+                        Console.Clear();
+                        Player.ShowPlayerInfo(_player);
+                        CheckGameStatus(_player);
+                        Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
+                    }
+
+                    Console.WriteLine("Tryck på [Enter] för att återgå till menyn..");
+                    Console.ReadKey();
                 }
                 else
                 {
                     Console.WriteLine("Du har inte tillräckligt med kapital för att spara det angivna beloppet.");
+                    return;
                 }
             }
+
             else
             {
                 Console.WriteLine("Ogiltig input, vänligen ange ett giltigt belopp.");
+                return;
             }
-
-            // Återgå till menyn efter att ha sparat
-            Console.WriteLine("Tryck på valfri tangent för att återgå till menyn...");
-            Console.ReadKey();
         }
 
+        //Metod för att spela på Sic Bo
+        private void PlaySicBo()
+        {
+            Console.Clear();
+            Console.WriteLine("Välj ett nummer att satsa på [1-6]");
+
+            int numberChoice;
+            if (!int.TryParse(Console.ReadLine(), out numberChoice) || numberChoice < 1 || numberChoice > 6)
+            {
+                Console.WriteLine("Ogiltigt nummer. Försök igen.");
+                return;
+            }
+
+
+            // Satsning
+
+            Console.WriteLine("Vilken summa vill du satsa?");
+            string input = Console.ReadLine();
+            double investmentAmount;
+
+            if (double.TryParse(input, out investmentAmount) || investmentAmount <= 0)
+            {
+                // Kontrollera att spelaren har tillräckligt med kapital för att spara det angivna beloppet
+                if (investmentAmount <= _player.Capital)
+                {
+                    //Slumpa resultat av roulette
+                    Random rand = new Random();
+                    int winningNumber = rand.Next(1, 7); // Motsvarar siffrorna på en tärning
+
+                    var scenario = _scenarios[8];
+
+                    if (numberChoice == winningNumber)
+                    {
+                        Console.WriteLine($"Grattis, du vann {investmentAmount * 6:F2} SEK!");
+                        _player.UpdateCapital(investmentAmount * 6);
+                        _player.UpdateKarma(scenario.KarmaImpacts[0]);
+                        _player.UpdateSocialStatus(scenario.SocialImpacts[0]);
+                        CheckGameStatus(_player);
+                        Console.Clear();
+                        Player.ShowPlayerInfo(_player);
+                        CheckGameStatus(_player);
+                        Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Tyvärr, du förlorade de {investmentAmount} SEK du satsade");
+                        _player.UpdateCapital(-investmentAmount);
+                        _player.UpdateKarma(scenario.KarmaImpacts[0]);
+                        _player.UpdateSocialStatus(scenario.SocialImpacts[0]);
+                        CheckGameStatus(_player);
+                        Console.Clear();
+                        Player.ShowPlayerInfo(_player);
+                        CheckGameStatus(_player);
+                        Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
+                    }
+
+                    Console.WriteLine("Tryck på [Enter] för att återgå till menyn..");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    Console.WriteLine("Du har inte tillräckligt med kapital för att spara det angivna beloppet.");
+                    return;
+                }
+            }
+
+            else
+            {
+                Console.WriteLine("Ogiltig input, vänligen ange ett giltigt belopp.");
+                return;
+            }
+        }
+
+        // Metod för enarmad bandit
+        private void PlayBandit()
+        {
+            Console.Clear();
+            Console.WriteLine("Hur mycket vill du satsa?");
+            string input = Console.ReadLine();
+            double investmentAmount;
+
+            if (double.TryParse(input, out investmentAmount) || investmentAmount <= 0)
+            {
+                // Kontrollera att spelaren har tillräckligt med kapital för att spara det angivna beloppet
+                if (investmentAmount <= _player.Capital)
+                {
+                    //Slumpa resultat av roulette
+                    Random rand = new Random();
+                    double chance = rand.NextDouble();
+
+                    var scenario = _scenarios[8];
+
+                    if (chance <= 0.01)
+                    {
+                        Console.WriteLine($"Grattis, du vann {investmentAmount * 10:F2} SEK!");
+                        _player.UpdateCapital(investmentAmount * 10);
+                        _player.UpdateKarma(scenario.KarmaImpacts[0]);
+                        _player.UpdateSocialStatus(scenario.SocialImpacts[0]);
+                        CheckGameStatus(_player);
+                        Console.Clear();
+                        Player.ShowPlayerInfo(_player);
+                        CheckGameStatus(_player);
+                        Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Tyvärr, du förlorade de {investmentAmount} SEK du satsade");
+                        _player.UpdateCapital(-investmentAmount);
+                        _player.UpdateKarma(scenario.KarmaImpacts[0]);
+                        _player.UpdateSocialStatus(scenario.SocialImpacts[0]);
+                        CheckGameStatus(_player);
+                        Console.Clear();
+                        Player.ShowPlayerInfo(_player);
+                        CheckGameStatus(_player);
+                        Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
+                    }
+
+                    Console.WriteLine("Tryck på [Enter] för att återgå till menyn..");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    Console.WriteLine("Du har inte tillräckligt med kapital för att spara det angivna beloppet.");
+                    return;
+                }
+            }
+
+            else
+            {
+                Console.WriteLine("Ogiltig input, vänligen ange ett giltigt belopp.");
+                return;
+            }
+        }
+        
+       
+        // Metod för att avsluta spelet när kapitalet tar slut
+        private void GameOverCapital()
+        {
+            Console.Clear();
+            Console.WriteLine("---------- GAME OVER ----------");
+            Console.WriteLine("\nKapitalet är slut! Utan pengar kan du inte överleva i Kapitalträsk. Utan cash är du lika");
+            Console.WriteLine("ointressant som gårdagens börsnotering. Kanske var kapitalism inte riktigt din grej trots allt?");
+            Console.WriteLine("\nTryck på valfri tangent för att avsluta...");
+            Console.ReadKey();
+            Environment.Exit(0); // Avslutar programmet
+        }
+
+        // Metod för att avsluta spelet när karma når noll
+        private void GameOverKarma()
+        {
+            Console.Clear();
+            Console.WriteLine("---------- GAME OVER ----------");
+            Console.WriteLine("\nNu är karmakontot nere på noll! Alla broar är brända, och Kapitalträsk har inte längre plats för dig.");
+            Console.WriteLine("I jakten på rikedom glömde du kanske att till och med Kapitalträsk kräver lite mänsklighet. Dags att");
+            Console.WriteLine("omvärdera... kanske blir det ett enklare liv i nästa spelomgång?");
+            Console.WriteLine("\nTryck på valfri tangent för att avsluta...");
+            Console.ReadKey();
+            Environment.Exit(0); // Avslutar programmet
+        }
+
+        // Metod för att avsluta spelet när social status är nere på noll
+        private void GameOverSocialStatus()
+        {
+            Console.Clear();
+            Console.WriteLine("---------- GAME OVER ----------");
+            Console.WriteLine("\nDin sociala status är nere på absolut botten. Kapitalträsk vill bara ha vinnare, inte osynliga nollor.");
+            Console.WriteLine("I slutändan visade det sig att du är lika mycket värd som din mingelstatus... och det är inte mycket.");
+            Console.WriteLine("Kanske kan ett försök till göra dig mer populär?");
+            Console.WriteLine("\nTryck på valfri tangent för att avsluta...");
+            Console.ReadKey();
+            Environment.Exit(0); // Avslutar programmet
+        }
+
+        // Kontrollera spelets status baserat på kapital, karma och social status
+        private void CheckGameStatus(Player player)
+        {
+            if (player.Capital <= 0)
+            {
+                GameOverCapital();
+            }
+            else if (player.Karma <= 0)
+            {
+                GameOverKarma();
+            }
+            else if (player.SocialStatus <= 0)
+            {
+                GameOverSocialStatus();
+            }
+        }
 
         // Metod för att avsluta spelet
         public void ExitGame()
