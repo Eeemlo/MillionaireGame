@@ -12,12 +12,11 @@ namespace MillionaireGame
         public string Question { get; set; }
         public List<string> OptionName { get; set; }
         public List<string> Options { get; set; }
-        public List<double?> FinancialImpacts { get; set; }
         public List<int> KarmaImpacts { get; set; }
-        public List<int> SocialImpacts { get; set; }
+        public List<double?> FinancialImpacts { get; set; }
         public List<double?> Returns { get; set; }
 
-        public Scenario(string localisation, string question, List<string> optionName, List<string> options, List<int> karmaImpacts, List<int> socialImpacts, List<double?> financialImpacts = null, List<double?> returns = null)
+        public Scenario(string localisation, string question, List<string> optionName, List<string> options, List<int> karmaImpacts, List<double?> financialImpacts = null, List<double?> returns = null)
         {
             Localisation = localisation;
             Question = question;
@@ -25,7 +24,6 @@ namespace MillionaireGame
             Options = options;
             FinancialImpacts = financialImpacts;
             KarmaImpacts = karmaImpacts;
-            SocialImpacts = socialImpacts;
             Returns = returns;
         }
 
@@ -42,22 +40,22 @@ namespace MillionaireGame
                 Console.ForegroundColor = ConsoleColor.Magenta;
 
                 // Kontrollera om vi har en fast påverkan (FinancialImpacts) eller procentuell avkastning (Returns)
-                if (FinancialImpacts != null && FinancialImpacts.Count > 0)
+                if (FinancialImpacts != null && FinancialImpacts.Count > 0 && FinancialImpacts[0] != null)
                 {
                     // Om det är fast påverkan
                     double impact = FinancialImpacts[0] ?? 0;
-                    Console.WriteLine($"(Påverkan: {impact} SEK, Social status: {SocialImpacts[0]}, Karmapåverkan: {KarmaImpacts[0]})\n");
+                    Console.WriteLine($"(Påverkan: {impact} SEK, Karmapåverkan: {KarmaImpacts[0]})\n");
                 }
-                else if (Returns != null && Returns.Count > 0)
+                else if (Returns != null && Returns.Count > 0 && Returns[0] != null)
                 {
                     // Om det är procentuell avkastning
                     double impact = Returns[0] ?? 0;
-                    Console.WriteLine($"(Avkastning: {impact * 100}%, Social status: {SocialImpacts[0]}, Karmapåverkan: {KarmaImpacts[0]})\n");
+                    Console.WriteLine($"(Avkastning: {impact * 100}%, Karmapåverkan: {KarmaImpacts[0]})\n");
                 }
                 else
                 {
                     // Om ingen ekonomisk påverkan finns, skriv ut endast social status och karmapåverkan
-                    Console.WriteLine($"(Social status: {SocialImpacts[0]}, Karmapåverkan: {KarmaImpacts[0]})\n");
+                    Console.WriteLine($"(Karmapåverkan: {KarmaImpacts[0]})\n");
                 }
 
                 Console.ResetColor();
@@ -72,28 +70,29 @@ namespace MillionaireGame
                     Console.ForegroundColor = ConsoleColor.Magenta;
 
                     // Kontrollera om vi har en fast påverkan eller procentuell avkastning
-                    if (FinancialImpacts != null && FinancialImpacts.Count > i)
+                    if (FinancialImpacts != null && FinancialImpacts.Count > i && FinancialImpacts[i] != null)
                     {
                         // Om det är fast påverkan
                         double impact = FinancialImpacts[i] ?? 0;
-                        Console.WriteLine($"(Påverkan: {impact} SEK, Social status: {SocialImpacts[i]}, Karmapåverkan: {KarmaImpacts[i]})\n");
+                        Console.WriteLine($"(Påverkan: {impact} SEK, Karmapåverkan: {KarmaImpacts[i]})\n");
                     }
-                    else if (Returns != null && Returns.Count > i)
+                    else if (Returns != null && Returns.Count > i && Returns[i] != null)
                     {
                         // Om det är procentuell avkastning
                         double impact = Returns[i] ?? 0;
-                        Console.WriteLine($"(Avkastning: {impact * 100}%, Social status: {SocialImpacts[i]}, Karmapåverkan: {KarmaImpacts[i]})\n");
+                        Console.WriteLine($"(Avkastning: {impact * 100}%, Karmapåverkan: {KarmaImpacts[i]})\n");
                     }
                     else
                     {
                         // Om ingen ekonomisk påverkan finns, skriv ut endast social status och karmapåverkan
-                        Console.WriteLine($"(Social status: {SocialImpacts[i]}, Karmapåverkan: {KarmaImpacts[i]})\n");
+                        Console.WriteLine($"(Karmapåverkan: {KarmaImpacts[i]})\n");
                     }
 
                     Console.ResetColor();
                 }
             }
         }
+
 
     }
 }

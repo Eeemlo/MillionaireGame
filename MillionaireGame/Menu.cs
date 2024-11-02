@@ -100,6 +100,7 @@ namespace MillionaireGame
                     break;
                 case "9":
                     game.StartScenario(9);
+                    break;
                 default:
                     Console.WriteLine("Ogiltigt val, försök igen!");
                     GameMenu(game);

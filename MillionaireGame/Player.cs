@@ -13,17 +13,15 @@ namespace MillionaireGame
         public string Name { get; set; }
         public double Capital { get; set; }
         public int Karma { get; set; }
-        public int SocialStatus { get; set; }
 
         //Referens till spel
         private Game _game;
 
-        public Player(string name, double initialCapital, int initialKarma, int initialStatus, Game game)
+        public Player(string name, double initialCapital, int initialKarma, Game game)
         {
             Name = name;
             Capital = initialCapital;
             Karma = initialKarma;
-            SocialStatus = initialStatus;
             _game = game;
         }
 
@@ -42,11 +40,6 @@ namespace MillionaireGame
             Karma += amount;
         }
 
-        //Metod för att uppådatera social status
-        public void UpdateSocialStatus(int amount)
-        {
-            SocialStatus += amount;
-        }
 
         //Statisk metod för att visa spelarens information
         public void ShowPlayerInfo(Player player)
@@ -54,7 +47,7 @@ namespace MillionaireGame
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("_____________________________________________________________________________________________________________________");
-            Console.Write($"| Kapitalist: {player.Name} | Saldo: {player.Capital:F2} | Social status: {player.SocialStatus} | Karma: {player.Karma} ");
+            Console.Write($"| Kapitalist: {player.Name} | Saldo: {player.Capital:F2} | Karma: {player.Karma} ");
             _game.PrintTotalTimePlayed();
             Console.WriteLine("---------------------------------------------------------------------------------------------------------------------");
             Console.WriteLine("");
@@ -63,14 +56,9 @@ namespace MillionaireGame
 
             Console.ForegroundColor = ConsoleColor.Red;
             //Visa varningsmeddelanden om låga värden
-            if (player.Capital < 5000)
+            if (player.Capital < 10000)
             {
                 Console.WriteLine("Kapitalträsk är ingen plats för pankisar! Du börjar få ont om kapital – dags att fixa kosing om du ska hålla näsan \növer vattenytan!\n");
-            }
-
-            if (player.SocialStatus < 20 )
-            {
-                Console.WriteLine("Din sociala status är nere på bottenvåningen! Dags att klättra i mingelhierarkin om du vill behålla din plats i \nKapitalträsk.\n");
             }
 
             if (player.Karma < 20)
