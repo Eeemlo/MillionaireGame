@@ -7,6 +7,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace MillionaireGame
 {
@@ -16,8 +17,10 @@ namespace MillionaireGame
         private List<Scenario> _scenarios;
         private Stopwatch _stopwatch; //Tidtagare
         private double _monthlyRent; //Månadshyra
+        private double _totalTimePlayedInMinutes;
+        private Stopwatch _rentStopwatch; // Ny Stopwatch för hyresbetalning
         private Menu _menu;
-
+        private System.Timers.Timer _timer;
 
         public Player Player // Offentlig egenskap för att komma åt spelaren
         {
@@ -29,6 +32,7 @@ namespace MillionaireGame
             _scenarios = InitializeScenarios();
             _stopwatch = new Stopwatch();
             _menu = new Menu(_player);
+            _rentStopwatch = new Stopwatch(); // Initiera Stopwatch
         }
 
 
@@ -37,6 +41,38 @@ namespace MillionaireGame
         {
             Menu.ShowMainMenu(this); // Visar huvudmenyn
         }
+
+        public void StartTimer()
+        {
+                // Ställ in timern för 2 minuter (120000 millisekunder)
+                _timer = new System.Timers.Timer(120000); // 2 minuter
+                _timer.Elapsed += OnTimedEvent; // Anropa CheckRent varje gång timern tickar
+                _timer.AutoReset = true; // Timern ska återställas automatiskt
+                _timer.Enabled = true; // Starta timern
+
+                // Andra startlogik som att visa välkomstmeddelande och spelstatus kan här
+            }
+
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            CheckRent(); // Anropa CheckRent när timern tickar
+        }
+
+        public void CheckRent()
+        {
+            // Dra hyran från spelarens kapital
+            _player.Capital += _monthlyRent;
+
+            // Informera spelaren om hyresbetalningen
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"\nDu har betalat hyra: {_monthlyRent} SEK. Ditt kapital är nu: {_player.Capital} SEK.");
+            Console.ResetColor();
+
+            // Kontrollera spelstatus efter hyresbetalning
+            CheckGameStatus(_player);
+        }
+
+
 
         // Metod för att starta ett nytt spel
         public void StartNewGame()
@@ -47,7 +83,7 @@ namespace MillionaireGame
             Console.WriteLine("Skriv ditt namn:"); // Ber användaren om sitt namn
 
             string playerName = Console.ReadLine(); // Tar emot spelarens namn
-            _player = new Player(playerName, 30000, 100, this); // Skapar en ny spelare med startkapital och karma
+            _player = new Player(playerName, 70000, 70, this); // Skapar en ny spelare med startkapital och karma
 
             if (string.IsNullOrWhiteSpace(playerName))
             {
@@ -71,7 +107,7 @@ namespace MillionaireGame
             Console.WriteLine("Spelets regler:");
             Console.WriteLine("- Du startar med 70 000 SEK i kapital och 70 karmapoäng");
             Console.WriteLine("- Varje beslut du tar kommer att påverka ditt kapital och karma positivt eller negativt.");
-            Console.WriteLine("- Varje månad (5 minuter i speltid) kommer du att behöva betala din hyra.");
+            Console.WriteLine("- Varje månad (5 minuter i speltid) kommer du att behöva betala dina fasta utgifter.");
             Console.WriteLine("- Målet är att uppnå miljonärstatus genom att fatta strategiska beslut och hålla dig över vattenytan.");
             Console.WriteLine("");
             Console.WriteLine("Är du redo att bli nästa stjärnskott i Kapitalträsk? Det är upp till dig att göra rätt val – eller de mest lönsamma!\r\n");
@@ -79,7 +115,8 @@ namespace MillionaireGame
             Console.WriteLine("Tryck på [Enter] för att börja ditt äventyr!");
             Console.ReadLine(); // Väntar på att spelaren trycker Enter
             _stopwatch.Start();
-            DisplayPlayerInfo(); // Visa spelarens info här
+            _rentStopwatch.Start();
+            StartTimer();
             StartScenario(0); //Startar första scenariot
         }
 
@@ -120,13 +157,44 @@ namespace MillionaireGame
             Menu.ShowMainMenu(this); // Går tillbaka till huvudmenyn
         }
 
+        public void HandlePlayerHouseChoice(int optionIndex)
+        {
+            Console.Clear();
+            // Kolla om _scenarios[0] och FinancialImpacts inte är null
+            if (_scenarios != null && _scenarios[0]?.FinancialImpacts != null)
+            {
+                // Kontrollera om det angivna indexet är giltigt
+                if (optionIndex >= 0 && optionIndex <= _scenarios[0].FinancialImpacts.Count)
+                {
+                    double? rentValue = _scenarios[0].FinancialImpacts[optionIndex];
+                    // Hämta hyresvärdet direkt
+                    _monthlyRent = rentValue.Value; // Ingen null-kontroll nödvändig
+
+                    // Logga hyresvärdet
+                    Console.WriteLine($"Hyra satt till {_monthlyRent} SEK för alternativ {optionIndex}.");
+                }
+                else
+                {
+                    Console.WriteLine("Ogiltigt val, ingen hyra satt.");
+                    // Här kan du hantera en standardhyra om du vill, men eftersom hyran alltid ska ha ett värde är det kanske inte nödvändigt.
+                    // _monthlyRent = 0; // Om det skulle behövas
+                }
+            }
+            else
+            {
+                Console.WriteLine("Ogiltigt scenario eller hyresinformation.");
+                // Här kan du också hantera en standardhyra om det behövs.
+                // _monthlyRent = 0; // Om det skulle behövas
+            }
+        }
+
 
 
         // Omvandla tid till månader
         public (int years, int months) GetTotalTimePlayed()
         {
             double totalMinutes = _stopwatch.Elapsed.TotalMinutes;
-            int totalMonths = (int)(totalMinutes / 5); // 5 minuter = 1 månad
+            int totalMonths = (int)(totalMinutes / 2); // 2 minuter = 1 månad
 
             int years = totalMonths / 12; // Beräkna antal år
             int months = totalMonths % 12; // Beräkna kvarvarande månader
@@ -164,7 +232,7 @@ namespace MillionaireGame
             Console.WriteLine($"| Total tid spelad: {timeString} |");
         }
 
-        private void DisplayPlayerInfo()
+        public void DisplayPlayerInfo()
         {
             Console.Clear();
             Player.ShowPlayerInfo(_player);
@@ -204,7 +272,7 @@ namespace MillionaireGame
                     },
                     
                     new List<int> { -5, +1, +3 }, // Karmapåverkan
-                    new List<double?> { -25000, -10000, 0 }, //Ekonomisk påverkan
+                    new List<double?> { -25000, -10000, -1000 }, //Ekonomisk påverkan
                     new List<double?> { null, null, null } //Procentuell påverkan på investerat kapital
 
                 ),
@@ -316,17 +384,17 @@ namespace MillionaireGame
                     {
                         "Bli kaffe-influencer",
                         "Sälj in din egenskapade kaffesyrup",
-                        "hej"
+                        "Köp en överprisad espresso"
                     },
                     new List<string>
                     {
                         "Bli en kaffe-influencer och åk runt till olika kaféer för att promota deras överprisade kaffe som 'sååå lyxigt och \nprisvärt'. Dela dina upplevelser på sociala medier och tjäna 5 000 kr för varje kopp du recenserar!",
                         "Sälj in din egen sirap med den förbluffande smaken av fuktig kattsträva! Perfekt för att förvandla vilken dryck som \nhelst till en vild smakupplevelse. Tjäna 3 000 kronor på att göra denna udda delikatess till en hit på \nkaféet!",
-                        "Köp en överprisad espresso för att..."
+                        "Köp en överprisad espresso för att visa att du också tillhör eliten. Varje klunk påminner dig om både kaffets styrka \noch pengarnas makt över vardagen. Betala 200 kr för att sitta kvar och kanske höra ett eller annat hemligt \ninvesteringstips från de andra kafégästerna!"
                     },
                     
-                    new List<int> { -5, -3, 0}, // Karma påverkan (exempelvärden)
-                                        new List<double?> { 5000, 3000, 50},
+                    new List<int> { -5, -3, -1}, // Karma påverkan (exempelvärden)
+                                        new List<double?> { 5000, 3000, -200},
                     new List<double?> {null, null, null} //Återbäring
                 ),
                       /*7*/
@@ -388,7 +456,7 @@ namespace MillionaireGame
                         "Till och med 500 kronor kan kännas jobbigt att skänka... Men det är bättre än att bara klaga. Ditt stöd hjälper till \natt bevara planeten – och kanske ger det din karma en uppgradering inför nästa semester. Varför inte?"
                     },
 
-                    new List<int> { +20, +5, +1 }, // Karma påverkan (exempelvärden)
+                    new List<int> { +30, +20, +5 }, // Karma påverkan (exempelvärden)
                                         new List<double?> { -20000, -4000, -500 },
                     new List<double?> {null, null, null} //Återbäring
                 ),
@@ -398,16 +466,16 @@ namespace MillionaireGame
         }
 
 
-        public void StartScenario(int scenarioIndex)
+     public void StartScenario(int scenarioIndex)
         {
+            Console.Clear();
+
             // Kolla att indexet är giltigt
             if (scenarioIndex < 0 || scenarioIndex >= _scenarios.Count)
             {
                 Console.WriteLine("Ogiltigt scenario.");
                 return;
             }
-
-            DisplayPlayerInfo(); // Använd den nya metoden här
 
             var scenario = _scenarios[scenarioIndex];
             Console.WriteLine("");
@@ -423,6 +491,8 @@ namespace MillionaireGame
 
             int optionIndex = GetValidOption(scenario); // Hämta giltigt val
 
+            // Anropa HandlePlayerHouseChoice oavsett scenarioIndex
+            HandlePlayerHouseChoice(optionIndex);
 
             if (HasReturn(scenario, optionIndex))
             {
@@ -476,6 +546,7 @@ namespace MillionaireGame
         // Hantera scenarion med investering och procentuell avkastning
         private void HandleInvestmentScenario(Scenario scenario, int optionIndex)
         {
+            Console.Clear();
             DisplayPlayerInfo(); // Använd den nya metoden här
 
             Console.WriteLine($"Hur mycket vill du investera i {scenario.OptionName[optionIndex]}?");
@@ -547,6 +618,7 @@ namespace MillionaireGame
             CheckGameStatus(_player);
 
             DisplayPlayerInfo(); 
+
             Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.\n");
             Console.WriteLine($"Ekonomisk påverkan: {financialImpact} SEK.");
             Console.WriteLine($"Karmapåverkan: {karmaImpact}.");
@@ -561,6 +633,7 @@ namespace MillionaireGame
         //Metod för att hantera spel på roulette
         private void PlayRoulette(Scenario scenario, int optionIndex)
         {
+            Console.Clear();
             DisplayPlayerInfo(); 
             Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.\n");
             Console.WriteLine("Vill du satsa på [1] rött eller [2] svart?");
@@ -627,6 +700,7 @@ namespace MillionaireGame
         //Metod för att spela på Sic Bo
         private void PlaySicBo(Scenario scenario, int optionIndex)
         {
+            Console.Clear();
             DisplayPlayerInfo();
             Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.\n");
             Console.WriteLine("Välj ett nummer att satsa på [1-6]");
@@ -696,6 +770,7 @@ namespace MillionaireGame
         // Metod för enarmad bandit
         private void PlayBandit(Scenario scenario, int optionIndex)
         {
+            Console.Clear();
             DisplayPlayerInfo();
             Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.\n");
             Console.WriteLine("Hur mycket vill du satsa?");
