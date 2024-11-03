@@ -44,18 +44,18 @@ namespace MillionaireGame
                 {
                     // Om det är fast påverkan
                     double impact = FinancialImpacts[0] ?? 0;
-                    Console.WriteLine($"(Påverkan: {impact} SEK, Karmapåverkan: {KarmaImpacts[0]})\n");
+                    Console.WriteLine($"(Fast ekonomisk påverkan: {impact} SEK, Karmapåverkan: {KarmaImpacts[0]})\n");
                 }
                 else if (Returns != null && Returns.Count > 0 && Returns[0] != null)
                 {
                     // Om det är procentuell avkastning
                     double impact = Returns[0] ?? 0;
-                    Console.WriteLine($"(Avkastning: {impact * 100}%, Karmapåverkan: {KarmaImpacts[0]})\n");
+                    Console.WriteLine($"(80% chans till avkastning om: {impact * 100}%, Karmapåverkan: {KarmaImpacts[0]})\n");
                 }
                 else
                 {
                     // Om ingen ekonomisk påverkan finns, skriv ut endast social status och karmapåverkan
-                    Console.WriteLine($"(Karmapåverkan: {KarmaImpacts[0]})\n");
+                    Console.WriteLine($"(Ekonomisk påverkan står i beskrivning, Karmapåverkan: {KarmaImpacts[0]})\n");
                 }
 
                 Console.ResetColor();
@@ -74,18 +74,18 @@ namespace MillionaireGame
                     {
                         // Om det är fast påverkan
                         double impact = FinancialImpacts[i] ?? 0;
-                        Console.WriteLine($"(Påverkan: {impact} SEK, Karmapåverkan: {KarmaImpacts[i]})\n");
+                        Console.WriteLine($"(Fast ekonomisk påverkan: {impact} SEK, Karmapåverkan: {KarmaImpacts[i]})\n");
                     }
                     else if (Returns != null && Returns.Count > i && Returns[i] != null)
                     {
                         // Om det är procentuell avkastning
                         double impact = Returns[i] ?? 0;
-                        Console.WriteLine($"(Avkastning: {impact * 100}%, Karmapåverkan: {KarmaImpacts[i]})\n");
+                        Console.WriteLine($"(80% chans till avkastning om: {impact * 100}%, Karmapåverkan: {KarmaImpacts[i]})\n");
                     }
                     else
                     {
                         // Om ingen ekonomisk påverkan finns, skriv ut endast social status och karmapåverkan
-                        Console.WriteLine($"(Karmapåverkan: {KarmaImpacts[i]})\n");
+                        Console.WriteLine($"(Ekonomisk påverkan står i beskrivning, Karmapåverkan: {KarmaImpacts[i]})\n");
                     }
 
                     Console.ResetColor();

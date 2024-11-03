@@ -16,6 +16,6 @@ namespace MillionaireGame
             Console.ReadLine();
         }
 
-        //Andra hjälpfunktioner
+       
     }
 }

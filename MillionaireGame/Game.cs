@@ -13,14 +13,13 @@ namespace MillionaireGame
 {
     internal class Game
     {
-        private Player _player; // En referens till spelaren som representerar användarens karaktär i spelet
-        private List<Scenario> _scenarios;
-        private Stopwatch _stopwatch; //Tidtagare
-        private double _monthlyRent; //Månadshyra
-        private double _totalTimePlayedInMinutes;
-        private Stopwatch _rentStopwatch; // Ny Stopwatch för hyresbetalning
-        private Menu _menu;
-        private System.Timers.Timer _timer;
+        private Player _player; // Referens till spelaren, ny instans av Player-klassen
+        private List<Scenario> _scenarios; // Lagrar en ny tom lista över scenarios
+        private Stopwatch _stopwatch; // Initierar tidtagare för total speltid
+        private double _monthlyRent; // Initierar variabel som ska lagra hyresbelopp
+        private double _totalTimePlayedInMinutes; // Lagrar sammanlagd speltid i minuter
+        private Menu _menu; // Initierar menyhantering, ny instans av klassen Menu.
+        private System.Timers.Timer _timer; // Sätter upp timern för kontinuerlig hyresdragning
 
         public Player Player // Offentlig egenskap för att komma åt spelaren
         {
@@ -32,94 +31,16 @@ namespace MillionaireGame
             _scenarios = InitializeScenarios();
             _stopwatch = new Stopwatch();
             _menu = new Menu(_player);
-            _rentStopwatch = new Stopwatch(); // Initiera Stopwatch
         }
 
 
-        // Metod för att starta spelet. Visar introduktion och huvudmeny.
+        /***** Metod för att starta spelet. Visar introduktion och huvudmeny. ******/
         public void Start()
         {
             Menu.ShowMainMenu(this); // Visar huvudmenyn
         }
 
-        public void StartTimer()
-        {
-                // Ställ in timern för 2 minuter (120000 millisekunder)
-                _timer = new System.Timers.Timer(120000); // 2 minuter
-                _timer.Elapsed += OnTimedEvent; // Anropa CheckRent varje gång timern tickar
-                _timer.AutoReset = true; // Timern ska återställas automatiskt
-                _timer.Enabled = true; // Starta timern
-
-                // Andra startlogik som att visa välkomstmeddelande och spelstatus kan här
-            }
-
-        private void OnTimedEvent(Object source, ElapsedEventArgs e)
-        {
-            CheckRent(); // Anropa CheckRent när timern tickar
-        }
-
-        public void CheckRent()
-        {
-            // Dra hyran från spelarens kapital
-            _player.Capital += _monthlyRent;
-
-            // Informera spelaren om hyresbetalningen
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"\nDu har betalat hyra: {_monthlyRent} SEK. Ditt kapital är nu: {_player.Capital} SEK.");
-            Console.ResetColor();
-
-            // Kontrollera spelstatus efter hyresbetalning
-            CheckGameStatus(_player);
-        }
-
-
-
-        // Metod för att starta ett nytt spel
-        public void StartNewGame()
-        {
-            Console.Clear(); // Rensar konsolen
-            Console.WriteLine("------------- NYTT SPEL ---------------");
-            Console.WriteLine("");
-            Console.WriteLine("Skriv ditt namn:"); // Ber användaren om sitt namn
-
-            string playerName = Console.ReadLine(); // Tar emot spelarens namn
-            _player = new Player(playerName, 70000, 70, this); // Skapar en ny spelare med startkapital och karma
-
-            if (string.IsNullOrWhiteSpace(playerName))
-            {
-                Console.WriteLine("Du måste ange ett spelarnamn... Försök igen!");
-                Utilities.Pause();
-                StartNewGame();
-            }
-            else
-            {
-                welcomePlayer();
-            }
-
-        }
-
-        public void welcomePlayer()
-        {
-            Console.Clear();
-            Console.WriteLine($"Välkommen {_player.Name}!"); // Välkomnar spelaren
-            Console.WriteLine("Du har precis tagit dina första steg i Kapitalträsk, där beslut om pengar och moral väger tungt.");
-            Console.WriteLine("");
-            Console.WriteLine("Spelets regler:");
-            Console.WriteLine("- Du startar med 70 000 SEK i kapital och 70 karmapoäng");
-            Console.WriteLine("- Varje beslut du tar kommer att påverka ditt kapital och karma positivt eller negativt.");
-            Console.WriteLine("- Varje månad (5 minuter i speltid) kommer du att behöva betala dina fasta utgifter.");
-            Console.WriteLine("- Målet är att uppnå miljonärstatus genom att fatta strategiska beslut och hålla dig över vattenytan.");
-            Console.WriteLine("");
-            Console.WriteLine("Är du redo att bli nästa stjärnskott i Kapitalträsk? Det är upp till dig att göra rätt val – eller de mest lönsamma!\r\n");
-            Console.WriteLine("---------------------------------------------------");
-            Console.WriteLine("Tryck på [Enter] för att börja ditt äventyr!");
-            Console.ReadLine(); // Väntar på att spelaren trycker Enter
-            _stopwatch.Start();
-            _rentStopwatch.Start();
-            StartTimer();
-            StartScenario(0); //Startar första scenariot
-        }
-
+        /***** Metod som ger spelintroduktion direkt efter att spelet startats *****/
         public void GameIntro()
         {
             Console.Clear();
@@ -142,10 +63,83 @@ namespace MillionaireGame
             Console.WriteLine("");
             Console.WriteLine("Tryck på [Enter] för att fortsätta...");
             Console.ReadLine();
-            StartNewGame();
-
+            StartNewGame(); // Startar det nya spelet
         }
 
+
+        /****** Metod för att startar en ny spelomgång spel *****/
+        public void StartNewGame()
+        {
+            Console.Clear();
+            Console.WriteLine("------------- NYTT SPEL ---------------");
+            Console.WriteLine("");
+            Console.WriteLine("Skriv ditt namn:");
+
+            string playerName = Console.ReadLine(); // Tar emot spelarens namn
+            _player = new Player(playerName, 70000, 70, this); // Skapar en ny spelare med startkapital och karma
+
+
+            // Felhantering
+            if (string.IsNullOrWhiteSpace(playerName))
+            {
+                Console.WriteLine("Du måste ange ett spelarnamn... Försök igen!");
+                Utilities.Pause();
+                StartNewGame();
+            }
+            else
+            {
+                welcomePlayer();
+            }
+        }
+
+
+        /***** Metod för att starta och ställa in timer ******/
+        public void StartTimer()
+        {
+                _timer = new System.Timers.Timer(120000); // Timer inställd på 2 minuter (120000ms)
+                _timer.Elapsed += CheckRent; // Anropa OnTimedEvent varje gång timern tickar
+                _timer.AutoReset = true; // Återställ timern till 0
+                _timer.Enabled = true; // Starta timern
+            }
+
+
+        /****** Metod för hyresdragning som går att använda med Elapsed-händelsen ******/
+        private void CheckRent(Object source, ElapsedEventArgs e)
+        {
+            _player.Capital += _monthlyRent; // Dra hyran från spelarens kapital
+
+            // Informera spelaren om hyresbetalningen
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"\nDu har betalat hyra: {_monthlyRent} SEK. Ditt kapital är nu: {_player.Capital} SEK.");
+            Console.ResetColor();
+
+            CheckGameStatus(_player); // Kontrollera spelstatus
+        }
+
+
+        /***** Metod som välkomnar spelare med namn och förklarar regler *****/
+        public void welcomePlayer()
+        {
+            Console.Clear();
+            Console.WriteLine($"Välkommen {_player.Name}!"); 
+            Console.WriteLine("Du har precis tagit dina första steg i Kapitalträsk, där beslut om pengar och moral väger tungt.");
+            Console.WriteLine("");
+            Console.WriteLine("Spelets regler:");
+            Console.WriteLine("- Du startar med 70 000 SEK i kapital och 70 karmapoäng");
+            Console.WriteLine("- Varje beslut du tar kommer att påverka ditt kapital och karma positivt eller negativt.");
+            Console.WriteLine("- Varje månad (5 minuter i speltid) kommer du att behöva betala dina fasta utgifter.");
+            Console.WriteLine("- Målet är att uppnå miljonärstatus genom att fatta strategiska beslut och hålla dig över vattenytan.");
+            Console.WriteLine("");
+            Console.WriteLine("Är du redo att bli nästa stjärnskott i Kapitalträsk? Det är upp till dig att göra rätt val – eller de mest lönsamma!\r\n");
+            Console.WriteLine("---------------------------------------------------");
+            Console.WriteLine("Tryck på [Enter] för att börja ditt äventyr!");
+            Console.ReadLine(); 
+            _stopwatch.Start(); // Startar tidtagning för total speltid
+            StartTimer(); // Startar timer för hyresdragning
+            StartScenario(0); //Startar första scenariot
+        }
+
+     
         // Metod för att ladda ett sparat spel
         public void LoadSavedGame()
         {
@@ -311,7 +305,7 @@ namespace MillionaireGame
                     
                     new List<int> { -20, -15, -10 }, // Karma påverkan (exempelvärden)
                     new List<double?> { null, null, null },
-                    new List<double?> {0.7, 0.5, 0.4} //Återbäring
+                    new List<double?> {0.6, 0.5, 0.4} //Återbäring
                 ),
                   /*3*/
                    new Scenario(
@@ -478,6 +472,7 @@ namespace MillionaireGame
             }
 
             var scenario = _scenarios[scenarioIndex];
+            DisplayPlayerInfo(); // Använd den nya metoden här
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"{scenario.Localisation}");
@@ -559,20 +554,35 @@ namespace MillionaireGame
                     : "Ogiltigt belopp. Ange ett positivt belopp för din investering.");
             }
 
-            //Hämta avkastningen
-            double returnRate = scenario.Returns[optionIndex].Value;
-            double profit = investmentAmount * returnRate;
+            Random random = new Random();
+            bool SuccessfulInvestment = random.NextDouble() <= 0.8; // 80% chans att lyckas med investering
 
-            // Hämta karma- och social påverkan
+            DisplayPlayerInfo(); // Använd den nya metoden här
+            Console.WriteLine($"Du har investerat {investmentAmount:F2} SEK i {scenario.OptionName[optionIndex]}.");
+
+            double profit;
+            if (SuccessfulInvestment)
+            {
+                //beräkna om investeringen lyckades
+                double returnRate = scenario.Returns[optionIndex].Value;
+                profit = investmentAmount * returnRate;
+                Console.WriteLine($"Investeringen gick bra! Din avkastning blev {profit:F2} SEK.");
+            }
+            else
+            {
+                //Förlust om investeringen misslyckas
+                profit = -investmentAmount;
+                Console.WriteLine($"Investeringen misslyckades, du förlorade dina {investmentAmount} SEK");
+            }
+
+
+            // Hämta karmapåverkan
             int karmaImpact = scenario.KarmaImpacts[optionIndex]; // Hämta karmapåverkan från listan
 
             _player.UpdateCapital(profit); // Lägg till vinsten
             _player.UpdateKarma(karmaImpact);
             CheckGameStatus(_player);
 
-            DisplayPlayerInfo(); // Använd den nya metoden här
-            Console.WriteLine($"Du har investerat {investmentAmount:F2} SEK i {scenario.OptionName[optionIndex]}.");
-            Console.WriteLine($"Din avkastning blev {profit:F2} SEK.");
             Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
             Console.ReadKey();
 
