@@ -21,6 +21,7 @@ namespace MillionaireGame
         private Menu _menu; // Initierar menyhantering, ny instans av klassen Menu.
         private System.Timers.Timer _timer; // Sätter upp timern för kontinuerlig hyresdragning
 
+
         public Player Player // Offentlig egenskap för att komma åt spelaren
         {
             get { return _player; } // Getter för att hämta spelarinformation
@@ -38,6 +39,17 @@ namespace MillionaireGame
         public void Start()
         {
             Menu.ShowMainMenu(this); // Visar huvudmenyn
+        }
+
+        /***** Metod för att ladda ett sparat spel EV TA BORT?? *****/
+        public void LoadSavedGame()
+        {
+            Console.Clear(); 
+            Console.WriteLine("----------- VÄLJ SPARAT SPEL --------------");
+            // Implementera logik för att ladda ett sparat spel if/else-sats
+            Console.WriteLine("Inga sparade spel hittades. Tryck på [Enter] för att återgå till huvudmenyn..."); 
+            Console.ReadLine(); 
+            Menu.ShowMainMenu(this); // Går tillbaka till huvudmenyn
         }
 
         /***** Metod som ger spelintroduktion direkt efter att spelet startats *****/
@@ -77,7 +89,6 @@ namespace MillionaireGame
 
             string playerName = Console.ReadLine(); // Tar emot spelarens namn
             _player = new Player(playerName, 70000, 70, this); // Skapar en ny spelare med startkapital och karma
-
 
             // Felhantering
             if (string.IsNullOrWhiteSpace(playerName))
@@ -139,52 +150,37 @@ namespace MillionaireGame
             StartScenario(0); //Startar första scenariot
         }
 
-     
-        // Metod för att ladda ett sparat spel
-        public void LoadSavedGame()
-        {
-            Console.Clear(); // Rensar konsolen
-            Console.WriteLine("----------- VÄLJ SPARAT SPEL --------------");
-            // Här kan du implementera logik för att ladda ett sparat spel
-            Console.WriteLine("Inga sparade spel hittades. Tryck på [Enter] för att återgå till huvudmenyn..."); // Meddelande till användaren
-            Console.ReadLine(); // Väntar på att spelaren trycker Enter
-            Menu.ShowMainMenu(this); // Går tillbaka till huvudmenyn
-        }
-
+        /***** Metod som hantera spelarens boendeval *****/
         public void HandlePlayerHouseChoice(int optionIndex)
         {
             Console.Clear();
-            // Kolla om _scenarios[0] och FinancialImpacts inte är null
+
+            // Kolla om _scenarios[0] och FinancialImpacts finns
             if (_scenarios != null && _scenarios[0]?.FinancialImpacts != null)
             {
-                // Kontrollera om det angivna indexet är giltigt
+                // Kontrollera om det angivna indexet för boendeval är giltigt
                 if (optionIndex >= 0 && optionIndex <= _scenarios[0].FinancialImpacts.Count)
                 {
+                    //Hämta hyrsebeloppet för det valda alternativet
                     double? rentValue = _scenarios[0].FinancialImpacts[optionIndex];
-                    // Hämta hyresvärdet direkt
-                    _monthlyRent = rentValue.Value; // Ingen null-kontroll nödvändig
+                    _monthlyRent = rentValue.Value; // Lagra månadshyra i _monthlyRent
 
-                    // Logga hyresvärdet
                     Console.WriteLine($"Hyra satt till {_monthlyRent} SEK för alternativ {optionIndex}.");
                 }
                 else
                 {
-                    Console.WriteLine("Ogiltigt val, ingen hyra satt.");
-                    // Här kan du hantera en standardhyra om du vill, men eftersom hyran alltid ska ha ett värde är det kanske inte nödvändigt.
-                    // _monthlyRent = 0; // Om det skulle behövas
+                    Console.WriteLine("Ogiltigt val, ingen hyra satt..");
                 }
             }
             else
             {
-                Console.WriteLine("Ogiltigt scenario eller hyresinformation.");
-                // Här kan du också hantera en standardhyra om det behövs.
-                // _monthlyRent = 0; // Om det skulle behövas
+                Console.WriteLine("Ogiltigt scenario..");
             }
         }
 
 
 
-        // Omvandla tid till månader
+        /***** Metod som omvandlar och returnerar tid från stopwatch till år och månader ****/
         public (int years, int months) GetTotalTimePlayed()
         {
             double totalMinutes = _stopwatch.Elapsed.TotalMinutes;
@@ -196,61 +192,58 @@ namespace MillionaireGame
             return (years, months);
         }
 
-        // Metod för att skriva ut tiden som är spelad
+
+        /***** Metod för att skriva ut den omvandlade tiden *****/
         public void PrintTotalTimePlayed()
         {
-            var (years, months) = GetTotalTimePlayed();
-            string timeString = "";
+            
+            var (years, months) = GetTotalTimePlayed(); // Hämta den fiktiva speltiden
+            string timeString = "";  // Lagra den formaterade tiden
 
-            // Formatera utskriften
+            // Formatera utskriften baserat på år
             if (years > 0)
             {
-                timeString += $"{years} år";
+                timeString += $"{years} år"; // Lägg till år i tidssträngen
             }
 
+            // Formetera utskriften baserat på månader
             if (months > 0)
             {
                 if (years > 0)
                 {
                     timeString += " och "; // Lägg till "och" om det finns både år och månader
                 }
-                timeString += $"{months} månader";
+                timeString += $"{months} månader"; // Lägg till månader i tidssträngen
             }
 
+            // Standardtext om ingen tid spelats än
             if (timeString == "")
             {
-                timeString = "Nyinflyttad"; // Om ingen tid har spelats
+                timeString = "Nyinflyttad";
 
             }
 
             Console.WriteLine($"| Total tid spelad: {timeString} |");
         }
 
+        /**** Metod för att visa spelarparametrar consolen ****/
         public void DisplayPlayerInfo()
         {
-            Console.Clear();
-            Player.ShowPlayerInfo(_player);
+            Console.Clear(); // Rensa konsolen
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
         }
-        /*
-        public bool IsScenarioAccessible(Scenario scenario, double playerCapital, int playerKarma, int playerSocialStatus)
-        {
-            // Här kan du lägga till logik för att kolla spelarens status innan tillträde.
-            if (scenario == börsscenario && playerCapital < 50000) return false;
-            if (scenario == svartaMarknaden && playerKarma > 0) return false;
-            // etc.
-            return true;
-        }*/
 
-        // Metod för att initiera scenarier
-        private List<Scenario> InitializeScenarios()
+            /***** Metod för att initiera en lista med olika scenarier *****/
+            private List<Scenario> InitializeScenarios()
         {
 
             var scenarios = new List<Scenario>
             {
-                /*0*/
+                /*index 0*/
                 new Scenario(
                     "VÄLKOMMEN TILL BOSTADSFÖRMEDLINGEN",
                     "Som  nyinflyttad i Kapitalträsk behöver du någonstans att bo. Du har därför tagit dig till bostadsförmedlingen - en \nplats där hoppet om ett förstahandskontrakt lever, åtminstone för de få som inte ger upp innan de når pensionsåldern. \nHär förmedlas allt från kvadratmeter-skrubbar till överprisade etagevåningar. \nVilken bostad väljer du?\r\n",
+                    
                     new List <string>
                     {
                         "Takvåningen",
@@ -266,36 +259,41 @@ namespace MillionaireGame
                     },
                     
                     new List<int> { -5, +1, +3 }, // Karmapåverkan
-                    new List<double?> { -25000, -10000, -1000 }, //Ekonomisk påverkan
-                    new List<double?> { null, null, null } //Procentuell påverkan på investerat kapital
+                    new List<double?> { -25000, -10000, -1000 }, //Ev. Fast ekonomisk påverkan
+                    new List<double?> { null, null, null } //Ev. Procentuell påverkan på investerat kapital
 
                 ),
-                /*1*/
+                /*index 1*/
                 new Scenario(
                     "BANKEN",
                     "Här kan du hantera dina pengar och investera i din framtid, men var beredd på att möta snåriga regler och tuffa beslut. \nBanken ger ett intryck av trygghet, men är också en plats där dina ekonomiska drömmar kan prövas. \nVad vill du göra?\r\n",
-                                        new List <string>
+                                        
+                    new List <string>
                     {
                         "Spara på räntekonto"
                     },
+
                     new List<string>
                     {
                         "Du får en fantastisk ränta på 0,1% – perfekt för att se dina besparingar förvandlas till en skugga av vad de en gång \nvar! En garanterad förlust i kampen mot inflationen!"
                     },
+
                     new List<int> {-1}, // Karmapåverkan
-                    new List<double?> { null }, // Ekonomisk påverkan som nullable
-                    new List<double?> {0.01} //Återbäring
+                    new List<double?> { null }, // Ev. Fast ekonomisk påverkan
+                    new List<double?> {0.01} // Ev. Procentuell påverkan på investerat kapital
                 ),
-                /*2*/
+                /*index 2*/
                   new Scenario(
-                      "BÖRSEN",
+                    "BÖRSEN",
                     "Här är snabba affärer och spekulationer regel snarare än undantag, och de privilegierade spelar ett riskfyllt spel med \nandras framtid. Medan finansvärlden jublar över sina vinster, kämpar många med att få ekonomin att gå ihop. Välkommen \ntill cirkusen där de få blir rika på de många – om du vågar delta..\nVad vill du investera i?\r\n",
-                                        new List <string>
+                                        
+                    new List <string>
                     {
                         "Makt & Profit AB",
                         "Arbetsmiljökatastrof AB",
                         "Slit & släng Mode AB"
                     },
+
                     new List<string>
                     {
                         "Ett företag som är djupt involverat i den globala vapenhandeln och försörjer nationer som prioriterar styrka framför \nfred. Med starka kopplingar till maktgalna regimer erbjuder de en rad produkter och tjänster som hjälper dessa \nländer att stärka sin militära kapacitet. Men hey, det man inte ser själv lider man inte av.. Eller hur?",
@@ -304,19 +302,21 @@ namespace MillionaireGame
                     },
                     
                     new List<int> { -20, -15, -10 }, // Karma påverkan (exempelvärden)
-                    new List<double?> { null, null, null },
-                    new List<double?> {0.6, 0.5, 0.4} //Återbäring
+                    new List<double?> { null, null, null }, // Ev. Fast ekonomisk påverkan
+                    new List<double?> {0.8, 0.6, 0.4} // Ev. Procentuell påverkan på investerat kapital
                 ),
-                  /*3*/
+                  /*index 3*/
                    new Scenario(
-                      "MONUMENTET PROFITSSON",
+                    "MONUMENTET PROFITSSON",
                     "Monumentet hyllar den kontroversiella industrimagnaten Torsten Profitsson, vars förmögenhet byggdes på girighet och \nexploatering. Området är en pulserande knutpunkt för både beundrare som vill föreviga sig själva i Profitssons skugga \noch aktivister som tar ställning mot hans arv. Välkommen till platsen där moral och makt krockar, och \ndär varje besökare tvingas välja sida.\nVad väljer du?\r\n",
-                                       new List <string>
+                                       
+                    new List <string>
                     {
                         "Monumentfotoutmaning",
                         "Ignorera Monumentet",
                         "Sätt upp en protestskylt"
                     },
+
                     new List<string>
                     {
                         "Hylla Profitsson och delta i en Monumentfotoutmaning genom att otografera dig själv vid monumentet och posta med \nhashtagen #InspiredByProfitsson. En okänd sponsor belönar fotot med 1000 kr!",
@@ -325,14 +325,15 @@ namespace MillionaireGame
                     },
                     
                     new List<int> { -10, 0, +10 }, // Karma påverkan (exempelvärden)
-                                        new List<double?> { +1000, 0, +500 },
-                    new List<double?> {null, null, null} //Återbäring
+                    new List<double?> { +1000, 0, +500 }, // Ev. Fast ekonomisk påverkan
+                    new List<double?> {null, null, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
-                   /*4*/
+                   /*index 4*/
                     new Scenario(
-                      "ARBETSFÖRMEDLINGEN",
+                    "ARBETSFÖRMEDLINGEN",
                     "Här samlas arbetssökande i hopp om jobb, men ofta möts de av ett virrvarr av byråkrati och systematiska brister. Medan \nnågra får hjälp att navigera, lämnas många kvar i limbo, bortglömda av systemet. Välkommen till platsen där hopp \noch besvikelse dansar en ständig tango..\nVill du skaffa ett jobb?\r\n",
-                                        new List <string>
+                                        
+                    new List <string>
                     {
                         "Telefonförsäljare för UnicornWonders",
                         "Städare på skandalhotell",
@@ -346,14 +347,15 @@ namespace MillionaireGame
                     },
 
                     new List<int> { -10, +5, +5 }, // Karma påverkan (exempelvärden)
-                                        new List<double?> { +20000, +10000, +1000 },
-                    new List<double?> {null, null, null} //Återbäring
-                ),
-                    /*5*/
+                    new List<double?> { +20000, +10000, +1000 }, // Ev. Fast ekonomisk påverkan
+                    new List<double?> {null, null, null} // Ev. Procentuell påverkan på investerat kapital
+                 ),
+                    /*index 5*/
                      new Scenario(
-                      "VALLOKALEN",
+                    "VALLOKALEN",
                     "Välkommen till vallokalen, där den demokratiska illusionen frodas! Här har du chansen att rösta på ett av tre \nfantastiska partier – välj klokt, för din framtid hänger på att du gör det bästa valet bland det sämsta \nsom erbjuds! Lägg en röst vetja!\r\n",
-                                        new List <string>
+                                        
+                    new List <string>
                     {
                         "Framgångspartiet (FP)",
                         "Partiet för öppen exkludering (PFÖE)",
@@ -367,19 +369,21 @@ namespace MillionaireGame
                     },
 
                     new List<int> { -20, -10, 5 }, // Karma påverkan (exempelvärden)
-                                        new List<double?> { +20000, +10000, -5000 }, //Fast ekonomisk påverkan
-                    new List<double?> {null, null, null} //Återbäring
+                    new List<double?> { +20000, +10000, -5000 }, // Ev. Fast ekonomisk påverkan
+                    new List<double?> {null, null, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
-                     /*6*/
+                     /*index 6*/
                       new Scenario(
                       "KAFÉ KAFFE & KAPITAL",
-                    "Kaféet är det självklara valet för den som vill njuta av en överprisad espresso medan de diskuterar hur man kan \nmaximera sin vinst på bekostnad av allt annat. Här samlas eliten för att prata affärer, medan de sippar på \ndrycker som hade kunnat betala en månads hyra för en ensamstående förälder i förorten.\nVad vill du göra?\r\n",
-                                        new List <string>
+                      "Kaféet är det självklara valet för den som vill njuta av en överprisad espresso medan de diskuterar hur man kan \nmaximera sin vinst på bekostnad av allt annat. Här samlas eliten för att prata affärer, medan de sippar på \ndrycker som hade kunnat betala en månads hyra för en ensamstående förälder i förorten.\nVad vill du göra?\r\n",
+                                        
+                      new List <string>
                     {
                         "Bli kaffe-influencer",
                         "Sälj in din egenskapade kaffesyrup",
                         "Köp en överprisad espresso"
                     },
+
                     new List<string>
                     {
                         "Bli en kaffe-influencer och åk runt till olika kaféer för att promota deras överprisade kaffe som 'sååå lyxigt och \nprisvärt'. Dela dina upplevelser på sociala medier och tjäna 5 000 kr för varje kopp du recenserar!",
@@ -388,19 +392,21 @@ namespace MillionaireGame
                     },
                     
                     new List<int> { -5, -3, -1}, // Karma påverkan (exempelvärden)
-                                        new List<double?> { 5000, 3000, -200},
-                    new List<double?> {null, null, null} //Återbäring
+                    new List<double?> { 5000, 3000, -200}, // Ev. Fast ekonomisk påverkan
+                    new List<double?> {null, null, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
-                      /*7*/
+                      /*index 7*/
                        new Scenario(
                       "GOLFKLUBBEN",
-                    "Golfklubben är en fristad för de som älskar att slå på en liten boll medan de diskuterar hur de kan förädla sina \nskattefuskstrategier. Här klipper man gräset lika noggrant som man klipper bort de oönskade medlemmarna – du vet, \nde som fortfarande tror på jämlikhet. Vad vill du göra?\r\n",
-                                        new List <string>
+                      "Golfklubben är en fristad för de som älskar att slå på en liten boll medan de diskuterar hur de kan förädla sina \nskattefuskstrategier. Här klipper man gräset lika noggrant som man klipper bort de oönskade medlemmarna – du vet, \nde som fortfarande tror på jämlikhet. Vad vill du göra?\r\n",
+                                        
+                      new List <string>
                     {
                         "Anordna en föreläsning",
                         "Investera i luftslott",
                         "Ta ett jobb som caddy"
                     },
+
                     new List<string>
                     {
                         "Håll en föreläsning om hur man kan använda sina golfaktiviteter för att skapa avdrag i skattedeklarationen. Tjäna \n10 000 kr genom att sälja biljetter till denna exklusiva session.",
@@ -409,19 +415,21 @@ namespace MillionaireGame
                     },
                    
                     new List<int> { -5, -2, 0 }, // Karma påverkan (exempelvärden)
-                                        new List<double?> { 10000, null, 15000 },
-                    new List<double?> {null, 1, null} //Återbäring
+                    new List<double?> { 10000, null, 15000 }, // Ev. Fast ekonomisk påverkan
+                    new List<double?> {null, 1, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
-                       /*8*/
-                        new Scenario(
+                       /*index 8*/
+                      new Scenario(
                       "CASINOT",
-                    "Casinot är en glittrande oas för de som har råd att leka med sina drömmar. Här kastas pengar bort som konfetti i en \nfest där lycka är en kortvarig gäst. Med varje kortdragning och snurr glöms den ekonomiska verkligheten bort i \njakten på jackpottar, men de flesta lämnar med tomma fickor och dyra minnen. Vad vill du göra?\r\n",
-                                       new List <string>
+                      "Casinot är en glittrande oas för de som har råd att leka med sina drömmar. Här kastas pengar bort som konfetti i en \nfest där lycka är en kortvarig gäst. Med varje kortdragning och snurr glöms den ekonomiska verkligheten bort i \njakten på jackpottar, men de flesta lämnar med tomma fickor och dyra minnen. Vad vill du göra?\r\n",
+                                       
+                      new List <string>
                     {
                         "Spela roulette",
                         "Spela sic bo",
                         "Spela på enarmad bandit"
                     },
+
                     new List<string>
                     {
                         "Sätt dina marker på bordet och känn pulsen stiga! Här har du 50% chans att dubbla dina satsade pengar. Kommer du att \nse rött eller svart?",
@@ -430,20 +438,22 @@ namespace MillionaireGame
                     },
                     
                     new List<int> { -1, -1, -1 }, // Karma påverkan (exempelvärden)
-                                        new List<double?> { null, null, null },
-                    new List<double?> {null, null, null} //Återbäring
+                    new List<double?> { null, null, null }, // Ev. Fast ekonomisk påverkan
+                    new List<double?> {null, null, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
-                                               /*9*/
+                   /*índex 9*/
                         new Scenario(
                       "VÄLGÖRENHETSGALAN",
-                    "Välgörenhetsgalan anordnas för att hjälpa stadens utsatta och samla in medel till lokala välgörenhetsorganisationer. \nDeltagarna får möjlighet att bidra till olika ändamål som stödjer utbildning för barn, djurens välbefinnande och \nmiljöskydd. Varje donation gör en skillnad! \r\n",
-                                       new List <string>
+                      "Välgörenhetsgalan anordnas för att hjälpa stadens utsatta och samla in medel till lokala välgörenhetsorganisationer. \nDeltagarna får möjlighet att bidra till olika ändamål som stödjer utbildning för barn, djurens välbefinnande och \nmiljöskydd. Varje donation gör en skillnad! \r\n",
+                                       
+                      new List <string>
                     {
                         "Donera till Barnens Framtid",
                         "Stöd Djurens Hem",
                         "Bidra till miljöinsatser"
                     },
-                    new List<string>
+                    
+                      new List<string>
                     {
                         "Det kanske inte ligger i din natur att donera dina surt förvärvade slantar – du måste ju försörja ditt dyra leverne! \nMen vad gör man inte för en rejäl karmaboost? Med en donation på 20 000 kronor kan du ge barn i utsatthet en chans \ntill utbildning och en bättre framtid.",
                         "För 4 000 kronor kan du ge hemlösa djur en trygg plats. Visst kan det kännas jobbigt att släppa ifrån dig en del av \nditt hårt tjänade kapital, men tänk på att även de fyrbenta vännerna förtjänar en chans. Karma i retur, kanske?",
@@ -451,62 +461,66 @@ namespace MillionaireGame
                     },
 
                     new List<int> { +30, +20, +5 }, // Karma påverkan (exempelvärden)
-                                        new List<double?> { -20000, -4000, -500 },
-                    new List<double?> {null, null, null} //Återbäring
+                    new List<double?> { -20000, -4000, -500 }, // Ev. Fast ekonomisk påverkan
+                    new List<double?> {null, null, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
             };
 
             return scenarios; // Returnera listan av scenarier
         }
 
-
-     public void StartScenario(int scenarioIndex)
+        /***** Metod för att starta det scenario användaren väljer via spelmenyn ****/
+    public void StartScenario(int scenarioIndex)
         {
             Console.Clear();
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
 
-            // Kolla att indexet är giltigt
+            // Kolla att scenarioindexet är giltigt
             if (scenarioIndex < 0 || scenarioIndex >= _scenarios.Count)
             {
                 Console.WriteLine("Ogiltigt scenario.");
                 return;
             }
 
-            var scenario = _scenarios[scenarioIndex];
-            DisplayPlayerInfo(); // Använd den nya metoden här
+            var scenario = _scenarios[scenarioIndex]; // Hämta det valda scenariot
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"{scenario.Localisation}");
-            Console.WriteLine($"\n{scenario.Question}");
+            Console.WriteLine($"{scenario.Localisation}"); // Skriv ut scenariorubrik
+            Console.WriteLine($"\n{scenario.Question}"); // Skriv ut scenariobeskrivning
             Console.ResetColor();
-            scenario.ShowImpacts();
+            scenario.ShowImpacts(); // Skriv ut ekonomisk- och karmapåverkan
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Ange siffran för ditt val eller tryck [0] för att gå tillbaka till spelmeny..");
             Console.ResetColor();
 
-            int optionIndex = GetValidOption(scenario); // Hämta giltigt val
+            int optionIndex = GetValidOption(scenario); // Hämta giltigt val baserat på spelarens inmatning
 
-            // Anropa HandlePlayerHouseChoice oavsett scenarioIndex
+            // Anropa HandlePlayerHouseChoice oavsett scenarioIndex (fick inte till det på annat sätt)
             HandlePlayerHouseChoice(optionIndex);
 
             if (HasReturn(scenario, optionIndex))
             {
-                HandleInvestmentScenario(scenario, optionIndex);
+                HandleInvestmentScenario(scenario, optionIndex); //Hantera scenarier med procentuell avkastning
             }
             else
             {
-                HandleNonReturnScenario(scenario, optionIndex, scenarioIndex);
+                HandleNonReturnScenario(scenario, optionIndex, scenarioIndex); //Hantera scenarier med fast avkastning
             }
         }
 
-        // Hämta ett giltigt alternativ från användaren
+        /***** Metod för att hämta ett giltigt alternativ/option från scenarie från användaren ****/
         private int GetValidOption(Scenario scenario)
         {
-            int optionIndex = -1;
+            int optionIndex = -1; // Initiera indexet för alternativ till ogiltigt värde
+
+            // Fortsätt be om inmatning av alternativ tills ett giltigt val görs
             while (optionIndex < 0 || optionIndex >= scenario.Options.Count)
             {
                 string choice = Console.ReadLine();
-                if (choice == "0")
+
+                // Kontrollera om spelaren vill gå tillbaka till menyn
+                if (choice == "0") 
                 {
                     Menu.GameMenu(this);
                     return -1; // Returnera ogiltigt värde för att signalera att användaren valt att gå tillbaka
@@ -525,7 +539,8 @@ namespace MillionaireGame
             return optionIndex;
         }
 
-        // Kontrollera om scenariot har en procentuell avkastning
+
+        /***** Metod för att kontrollera om scenariot har en procentuell avkastning *****/
         private bool HasReturn(Scenario scenario, int optionIndex)
         {
             // Kontrollera att Returns-listan existerar och att indexet är giltigt för denna lista
@@ -538,48 +553,53 @@ namespace MillionaireGame
             return scenario.Returns[optionIndex].HasValue;
         }
 
-        // Hantera scenarion med investering och procentuell avkastning
+
+        /****** Metod för att hantera scenarion som innefattar investering och procentuell avkastning ****/
         private void HandleInvestmentScenario(Scenario scenario, int optionIndex)
         {
             Console.Clear();
-            DisplayPlayerInfo(); // Använd den nya metoden här
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
 
             Console.WriteLine($"Hur mycket vill du investera i {scenario.OptionName[optionIndex]}?");
-            double investmentAmount;
+            double investmentAmount; // initiera variabel som ska lagra investerad summa
 
+            // Kontrollera att användaren har tillräckligt med kapital för att investera vald summa
             while (!double.TryParse(Console.ReadLine(), out investmentAmount) || investmentAmount <= 0 || investmentAmount > _player.Capital)
             {
                 Console.WriteLine(investmentAmount > _player.Capital
                     ? "Du har inte tillräckligt med kapital för denna investering. Försök igen."
                     : "Ogiltigt belopp. Ange ett positivt belopp för din investering.");
             }
-
-            Random random = new Random();
+            
+            Random random = new Random(); // Generera randomiserat nummer mellan 1 och 2
             bool SuccessfulInvestment = random.NextDouble() <= 0.8; // 80% chans att lyckas med investering
 
-            DisplayPlayerInfo(); // Använd den nya metoden här
+            
+            DisplayPlayerInfo(); // Visa spelarinformation
             Console.WriteLine($"Du har investerat {investmentAmount:F2} SEK i {scenario.OptionName[optionIndex]}.");
 
-            double profit;
+            double profit; // Variabel som ska lagra eventuell avkastning
+
+            // Kontrollera om investeringen lyckades eller inte
             if (SuccessfulInvestment)
             {
-                //beräkna om investeringen lyckades
+                // Vinst om investeringen lyckades
                 double returnRate = scenario.Returns[optionIndex].Value;
                 profit = investmentAmount * returnRate;
                 Console.WriteLine($"Investeringen gick bra! Din avkastning blev {profit:F2} SEK.");
             }
             else
             {
-                //Förlust om investeringen misslyckas
+                //Förlust om investeringen misslyckades
                 profit = -investmentAmount;
                 Console.WriteLine($"Investeringen misslyckades, du förlorade dina {investmentAmount} SEK");
             }
 
-
             // Hämta karmapåverkan
             int karmaImpact = scenario.KarmaImpacts[optionIndex]; // Hämta karmapåverkan från listan
 
-            _player.UpdateCapital(profit); // Lägg till vinsten
+            // Uppdatera spelarparametrar och kontrollera så att de inte är 0
+            _player.UpdateCapital(profit);
             _player.UpdateKarma(karmaImpact);
             CheckGameStatus(_player);
 
@@ -589,12 +609,16 @@ namespace MillionaireGame
             Menu.GameMenu(this); // Återgå till menyn
         }
 
+
+        /***** Metod för att hantera casinoscenario och scenarion med fast ekonomisk påverkan *****/
         private void HandleNonReturnScenario(Scenario scenario, int optionIndex, int scenarioIndex)
         {
             Console.Clear();
+
             // Kontrollera om detta är ett casinospel utan ekonomisk påverkan eller avkastning
             if (scenarioIndex == 8)
             {
+                // Skicka spelaren till rätt spelmetod baserat på val
                 switch (optionIndex)
                 {
                     case 0:
@@ -610,24 +634,24 @@ namespace MillionaireGame
                         Console.WriteLine("Ogiltigt val.");
                         break;
                 }
-                // Efter att ha spelat, återgå till menyn
+
                 Menu.GameMenu(this);
                 return; // Avsluta för att undvika att fortsätta nedan
             }
 
-            // Annars, hantera vanliga scenarion utan avkastning
+            // Hantera vanliga scenarion med fast ekonomisk påverkan
             double financialImpact = scenario.FinancialImpacts != null && optionIndex < scenario.FinancialImpacts.Count
-                ? scenario.FinancialImpacts[optionIndex] ?? 0 : 0;
+                ? scenario.FinancialImpacts[optionIndex] ?? 0 : 0; // Om FinancialImpacts finns och optionIndex är giltigt, hämta värdet; annars sätt till 0.
 
             int karmaImpact = scenario.KarmaImpacts != null && optionIndex < scenario.KarmaImpacts.Count
-                ? scenario.KarmaImpacts[optionIndex] : 0;
+                ? scenario.KarmaImpacts[optionIndex] : 0; // Om KarmaImpacts finns och optionIndex är giltigt, hämta värdet; annars sätt till 0.
 
-
+            // Uppdatera spelarparametrar och kontrollera så att de inte är 0.
             _player.UpdateCapital(financialImpact);
             _player.UpdateKarma(karmaImpact);
             CheckGameStatus(_player);
 
-            DisplayPlayerInfo(); 
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
 
             Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.\n");
             Console.WriteLine($"Ekonomisk påverkan: {financialImpact} SEK.");
@@ -635,20 +659,21 @@ namespace MillionaireGame
             Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
             Console.ReadKey();
 
-            // Återgå till menyn efter att ha hanterat påverkan
-            Menu.GameMenu(this);
+            Menu.GameMenu(this); // Återgå till spelmeny
         }
 
 
-        //Metod för att hantera spel på roulette
+        /**** Metod för att hantera spel på roulette *****/
         private void PlayRoulette(Scenario scenario, int optionIndex)
         {
             Console.Clear();
-            DisplayPlayerInfo(); 
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
+
             Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.\n");
             Console.WriteLine("Vill du satsa på [1] rött eller [2] svart?");
             string colorChoice = Console.ReadLine();
 
+            // Kontrollera att val är 1 eller 2
             if (colorChoice != "1" && colorChoice != "2")
             {
                 Console.WriteLine("Ogiltigt val. Försök igen!");
@@ -657,35 +682,35 @@ namespace MillionaireGame
 
             Console.WriteLine("Vilken summa vill du satsa?");
             string input = Console.ReadLine();
-            double investmentAmount;
+            double investmentAmount; // Variabel som ska lagra satsad summa
 
+            // Om det går att omvandla spelarens input till ett double-värde, kör kod:
             if (double.TryParse(input, out investmentAmount) || investmentAmount <= 0)
             {
                 // Kontrollera att spelaren har tillräckligt med kapital för att spara det angivna beloppet
                 if (investmentAmount <= _player.Capital)
                 {
-                    //Slumpa resultat av roulette
-                    Random rand = new Random();
+                    Random rand = new Random(); // Slumpa ett nummer mellan 1-2
                     int winningColor = rand.Next(1, 3); // 1= röd, 2 = svart
 
-
+                    // Kontrollera om spelarens val matchar slumpat resultat
                     if (colorChoice == winningColor.ToString())
                     {
-                        
+                        // Om ja, spelare vinner
                         _player.UpdateCapital(investmentAmount * 2);
                         _player.UpdateKarma(scenario.KarmaImpacts[0]);
                         CheckGameStatus(_player);
-                        DisplayPlayerInfo();
+                        Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
                         Console.WriteLine($"Grattis, du vann {investmentAmount * 2} SEK!");
                         Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
                     }
                     else
                     {
-                
+                        // Om nej, spelare förlorar
                         _player.UpdateCapital(-investmentAmount);
                         _player.UpdateKarma(scenario.KarmaImpacts[0]);
                         CheckGameStatus(_player);
-                        DisplayPlayerInfo();
+                        Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
                         Console.WriteLine($"Tyvärr, du förlorade de {investmentAmount} SEK du satsade");
                         Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
                     }
@@ -711,51 +736,53 @@ namespace MillionaireGame
         private void PlaySicBo(Scenario scenario, int optionIndex)
         {
             Console.Clear();
-            DisplayPlayerInfo();
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
+
             Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.\n");
             Console.WriteLine("Välj ett nummer att satsa på [1-6]");
 
-            int numberChoice;
+            int numberChoice; // Variabel som ska lagra satsad siffra
+
+
             if (!int.TryParse(Console.ReadLine(), out numberChoice) || numberChoice < 1 || numberChoice > 6)
             {
                 Console.WriteLine("Ogiltigt nummer. Försök igen.");
                 return;
             }
 
-
             // Satsning
-
             Console.WriteLine("Vilken summa vill du satsa?");
             string input = Console.ReadLine();
-            double investmentAmount;
+            double investmentAmount; // Variabel som ska lagra satsad summa
 
+            // Om det går att omvandla spelarens input till ett double-värde, kör kod:
             if (double.TryParse(input, out investmentAmount) || investmentAmount <= 0)
             {
                 // Kontrollera att spelaren har tillräckligt med kapital för att spara det angivna beloppet
                 if (investmentAmount <= _player.Capital)
                 {
-                    //Slumpa resultat av roulette
-                    Random rand = new Random();
+                    Random rand = new Random(); // Slumpa resultat av roulette
                     int winningNumber = rand.Next(1, 7); // Motsvarar siffrorna på en tärning
 
-
+                    // Kontrollera om slumpad siffra matchar spelarens valda siffra
                     if (numberChoice == winningNumber)
                     {
                       
+                        // Om ja, spelaren vinner
                         _player.UpdateCapital(investmentAmount * 6);
                         _player.UpdateKarma(scenario.KarmaImpacts[0]);
                         CheckGameStatus(_player);
-                        DisplayPlayerInfo();
+                        Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
                         Console.WriteLine($"Grattis, du vann {investmentAmount * 6:F2} SEK!");
                         Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
                     }
                     else
                     {
-                       
+                       // Om nej, spelaren förlorar
                         _player.UpdateCapital(-investmentAmount);
                         _player.UpdateKarma(scenario.KarmaImpacts[0]);
                         CheckGameStatus(_player);
-                        DisplayPlayerInfo();
+                        Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
                         Console.WriteLine($"Tyvärr, du förlorade de {investmentAmount} SEK du satsade");
                         Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
                     }
@@ -777,43 +804,46 @@ namespace MillionaireGame
             }
         }
 
-        // Metod för enarmad bandit
+        /***** Metod för att spela på enarmad bandit *****/
         private void PlayBandit(Scenario scenario, int optionIndex)
         {
             Console.Clear();
-            DisplayPlayerInfo();
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
+
             Console.WriteLine($"\nDu valde: {scenario.OptionName[optionIndex]}.\n");
             Console.WriteLine("Hur mycket vill du satsa?");
             string input = Console.ReadLine();
-            double investmentAmount;
+            double investmentAmount; // Variabel som ska lagra satsad summa
 
+
+            // Om det går att omvandla spelarens input till ett double-värde, kör kod:
             if (double.TryParse(input, out investmentAmount) || investmentAmount <= 0)
             {
                 // Kontrollera att spelaren har tillräckligt med kapital för att spara det angivna beloppet
                 if (investmentAmount <= _player.Capital)
                 {
-                    //Slumpa resultat av roulette
+                    //Slumpa resultat av enarmad bandit genom att generera slumpmässigt tal mellan 0.0 och 1.0
                     Random rand = new Random();
                     double chance = rand.NextDouble();
 
-
+                    // Kontrollera om det slumpade talet är lika med eller mindre än 0.01 (1% chans att vinna)
                     if (chance <= 0.01)
-                    {
-                      
+                    {  
+                        // Om ja, spelare vinner
                         _player.UpdateCapital(investmentAmount * 10);
                         _player.UpdateKarma(scenario.KarmaImpacts[0]);
                         CheckGameStatus(_player);
-                        DisplayPlayerInfo();
+                        Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
                         Console.WriteLine($"Grattis, du vann {investmentAmount * 10:F2} SEK!");
                         Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
                     }
                     else
                     {
-                        
+                        // Om nej, spelare förlorar
                         _player.UpdateCapital(-investmentAmount);
                         _player.UpdateKarma(scenario.KarmaImpacts[0]);
                         CheckGameStatus(_player);
-                        DisplayPlayerInfo();
+                        Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
                         Console.WriteLine($"Tyvärr, du förlorade de {investmentAmount} SEK du satsade");
                         Console.WriteLine($"Ditt totala kapital är nu: {_player.Capital:F2} SEK");
                     }
@@ -836,10 +866,11 @@ namespace MillionaireGame
         }
         
        
-        // Metod för att avsluta spelet när kapitalet tar slut
+        /**** Metod för Game Over-meddelande när kapitalet tar slut *****/
         private void GameOverCapital()
         {
-            DisplayPlayerInfo();
+            Console.Clear();
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
             Console.WriteLine("---------- GAME OVER ----------");
             Console.WriteLine("\nKapitalet är slut! Utan pengar kan du inte överleva i Kapitalträsk. Utan cash är du lika");
             Console.WriteLine("ointressant som gårdagens börsnotering. Kanske var kapitalism inte riktigt din grej trots allt?");
@@ -848,10 +879,11 @@ namespace MillionaireGame
             Environment.Exit(0); // Avslutar programmet
         }
 
-        // Metod för att avsluta spelet när karma når noll
+        /***** Metod för Game OVer-meddelande när karma når noll *****/
         private void GameOverKarma()
         {
-            DisplayPlayerInfo();
+            Console.Clear();
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
             Console.WriteLine("---------- GAME OVER ----------");
             Console.WriteLine("\nNu är karmakontot nere på noll! Alla broar är brända, och Kapitalträsk har inte längre plats för dig.");
             Console.WriteLine("I jakten på rikedom glömde du kanske att till och med Kapitalträsk kräver lite mänsklighet. Dags att");
@@ -861,10 +893,11 @@ namespace MillionaireGame
             Environment.Exit(0); // Avslutar programmet
         }
 
+        /***** Metod för vinst-meddelande *****/
         private void PlayerWon()
         {
             Console.Clear();
-            DisplayPlayerInfo();
+            Player.ShowPlayerInfo(_player); // Visa den aktuella spelarens information
             Console.WriteLine("---------- GRATTIS! DU HAR VUNNIT ----------");
             Console.WriteLine("\nSå, du står här som miljonär, omgiven av blänkande sedlar och förhoppningar.");
             Console.WriteLine("Visst, vägen hit har kanske inneburit att du har gått över ett par lik, men vem räknar?");
@@ -874,7 +907,7 @@ namespace MillionaireGame
             Environment.Exit(0); // Avslutar programmet
         }
 
-        // Kontrollera spelets status baserat på kapital, karma och social status
+        /***** Metod för att kontrollera spelets status baserat på kapital, karma och social status och visa Game Over eller vinst-meddelande ****/
         private void CheckGameStatus(Player player)
         {
              if (player.Capital >= 1000000)
@@ -892,7 +925,7 @@ namespace MillionaireGame
 
         }
 
-        // Metod för att avsluta spelet
+        /****** Metod för att avsluta spelet *****/
         public void ExitGame()
         {
             _stopwatch.Stop(); // Stoppa tidtagaren när spelet avslutas
@@ -902,5 +935,5 @@ namespace MillionaireGame
             Console.WriteLine($"Total speltid: {totalTime.Minutes} minuter och {totalTime.Seconds} sekunder.");
             Environment.Exit(0);
         }
-    } // Avslutande klammerparentes för Game-klassen
-} // Avslutande klammerparentes för namespace MillionaireGame
+    } 
+} 

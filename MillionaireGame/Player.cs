@@ -44,7 +44,7 @@ namespace MillionaireGame
         //Statisk metod för att visa spelarens information
         public void ShowPlayerInfo(Player player)
         {
-
+            Console.Clear();
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("_____________________________________________________________________________________________________________________");
             Console.Write($"| Kapitalist: {player.Name} | Saldo: {player.Capital:F2} | Karma: {player.Karma} ");

@@ -56,8 +56,7 @@ namespace MillionaireGame
 
         public static void GameMenu(Game game)
         {
-            Console.Clear();
-            game.DisplayPlayerInfo();
+            game.Player.ShowPlayerInfo(game.Player); // Visa den aktuella spelarens information
 
             Console.WriteLine("\n\n------------VART VILL DU GÅ NU?----------------\n");
             Console.WriteLine("1. Banken");
