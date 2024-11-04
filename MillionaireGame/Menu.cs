@@ -22,14 +22,13 @@ namespace MillionaireGame
         {
             Console.Clear();
             Console.WriteLine("----------------------------------------");
-            Console.WriteLine("              MILJONÄRSRESAN            ");
+            Console.WriteLine("      VÄLKOMMEN TILL KAPITALTRÄSK!           ");
             Console.WriteLine("En absurd utmaning i kapitalismens värld");
             Console.WriteLine("----------------------------------------");
             Console.WriteLine("");
             Console.WriteLine("-------------- HUVUDMENY ----------------");
             Console.WriteLine("1. Starta nytt spel");
-            Console.WriteLine("2. Ladda tidigare spel");
-            Console.WriteLine("3. Avsluta");
+            Console.WriteLine("2. Avsluta");
             Console.WriteLine("-----------------------------------------");
 
             string choice = Console.ReadLine();
@@ -41,10 +40,6 @@ namespace MillionaireGame
                     game.StartScenario(0);
                     break;
                 case "2":
-                    game.LoadSavedGame();
-                    ShowMainMenu(game);
-                    break;
-                case "3":
                     game.ExitGame();
                     break;
                 default:
@@ -68,6 +63,8 @@ namespace MillionaireGame
             Console.WriteLine("7. Golfklubben");
             Console.WriteLine("8. Casinot");
             Console.WriteLine("9. Välgörenhetsgalan");
+            Console.WriteLine("____________________________________________________");
+            Console.WriteLine("10. Gå till spelets startmeny för att avsluta");
 
             string choice = Console.ReadLine();
 
@@ -99,6 +96,9 @@ namespace MillionaireGame
                     break;
                 case "9":
                     game.StartScenario(9);
+                    break;
+                case "10":
+                    ShowMainMenu(game);
                     break;
                 default:
                     Console.WriteLine("Ogiltigt val, försök igen!");

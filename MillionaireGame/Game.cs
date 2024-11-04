@@ -35,6 +35,7 @@ namespace MillionaireGame
         }
 
 
+
         /***** Metod för att starta spelet. Visar introduktion och huvudmeny. ******/
         public void Start()
         {
@@ -107,7 +108,7 @@ namespace MillionaireGame
         /***** Metod för att starta och ställa in timer ******/
         public void StartTimer()
         {
-                _timer = new System.Timers.Timer(120000); // Timer inställd på 2 minuter (120000ms)
+                _timer = new System.Timers.Timer(180000); // Timer inställd på 2 minuter (120000ms)
                 _timer.Elapsed += CheckRent; // Anropa OnTimedEvent varje gång timern tickar
                 _timer.AutoReset = true; // Återställ timern till 0
                 _timer.Enabled = true; // Starta timern
@@ -138,7 +139,7 @@ namespace MillionaireGame
             Console.WriteLine("Spelets regler:");
             Console.WriteLine("- Du startar med 70 000 SEK i kapital och 70 karmapoäng");
             Console.WriteLine("- Varje beslut du tar kommer att påverka ditt kapital och karma positivt eller negativt.");
-            Console.WriteLine("- Varje månad (5 minuter i speltid) kommer du att behöva betala dina fasta utgifter.");
+            Console.WriteLine("- Varje månad (3 minuter i speltid) kommer du att behöva betala din hyra.");
             Console.WriteLine("- Målet är att uppnå miljonärstatus genom att fatta strategiska beslut och hålla dig över vattenytan.");
             Console.WriteLine("");
             Console.WriteLine("Är du redo att bli nästa stjärnskott i Kapitalträsk? Det är upp till dig att göra rätt val – eller de mest lönsamma!\r\n");
@@ -184,7 +185,7 @@ namespace MillionaireGame
         public (int years, int months) GetTotalTimePlayed()
         {
             double totalMinutes = _stopwatch.Elapsed.TotalMinutes;
-            int totalMonths = (int)(totalMinutes / 2); // 2 minuter = 1 månad
+            int totalMonths = (int)(totalMinutes / 3); // 2 minuter = 1 månad
 
             int years = totalMonths / 12; // Beräkna antal år
             int months = totalMonths % 12; // Beräkna kvarvarande månader
@@ -324,7 +325,7 @@ namespace MillionaireGame
                         "Du gör din röst hörd genom att sätta upp en protestskylt vid monumentet, vilket lockar uppmärksamhet från en lokal \naktivistgrupp som erbjuder dig en symbolisk belöning om 500 kronor."
                     },
                     
-                    new List<int> { -10, 0, +10 }, // Karma påverkan (exempelvärden)
+                    new List<int> { -5, 0, +10 }, // Karma påverkan (exempelvärden)
                     new List<double?> { +1000, 0, +500 }, // Ev. Fast ekonomisk påverkan
                     new List<double?> {null, null, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
@@ -363,13 +364,13 @@ namespace MillionaireGame
                     },
                     new List<string>
                     {
-                        "Rösta på oss för en skattelättnad på 20 000 kronor! Visst, barn, äldre och sjuka kanske drabbas av en tynande välfärd, \nmen det påverkar ju inte dig. Låt din framgång vara det enda som räknas!",
-                        "Vi skapar en värld där alla som passar in i vår snäva mall får sin plats – resten får gärna stanna utanför. En röst \npå oss innebär 10 000 kronor mer i din plånbok tack vare vår effektiviserade integrationsstrategi som \nprioriterar avhumanisering framför empati.",
+                        "Rösta på oss för en skattelättnad på 10 000 kronor! Visst, barn, äldre och sjuka kanske drabbas av en tynande välfärd, \nmen det påverkar ju inte dig. Låt din framgång vara det enda som räknas!",
+                        "Vi skapar en värld där alla som passar in i vår snäva mall får sin plats – resten får gärna stanna utanför. En röst \npå oss innebär 20 000 kronor mer i din plånbok tack vare vår effektiviserade integrationsstrategi som \nprioriterar avhumanisering framför empati.",
                         "Vi skapar en värld där miljö och välfärd går hand i hand. Genom att rösta på oss bidrar du till en grönare framtid, \nmed investeringar i hållbara lösningar och ett stärkt socialt skyddsnät. Din skatt går till att förbättra \nlivskvaliteten för alla, med fokus på ren energi, utbildning och sjukvård. Du betalar 5 000 kronor \nmer i skatt som gör du en betydande skillnad för samhället."
                     },
 
-                    new List<int> { -20, -10, 5 }, // Karma påverkan (exempelvärden)
-                    new List<double?> { +20000, +10000, -5000 }, // Ev. Fast ekonomisk påverkan
+                    new List<int> { -10, -20, 5 }, // Karma påverkan (exempelvärden)
+                    new List<double?> { +10000, +20000, -5000 }, // Ev. Fast ekonomisk påverkan
                     new List<double?> {null, null, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
                      /*index 6*/
@@ -414,8 +415,8 @@ namespace MillionaireGame
                         "Som caddy får du chansen att gå i elitens fotspår – bokstavligt talat! Tjäna 15 000 kr på att bära deras tunga \nklubbor medan du elegant undviker deras ständiga skrytande om framgångar och affärer."
                     },
                    
-                    new List<int> { -5, -2, 0 }, // Karma påverkan (exempelvärden)
-                    new List<double?> { 10000, null, 15000 }, // Ev. Fast ekonomisk påverkan
+                    new List<int> { -10, -5, +3 }, // Karma påverkan (exempelvärden)
+                    new List<double?> { 10000, null, 5000 }, // Ev. Fast ekonomisk påverkan
                     new List<double?> {null, 1, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
                        /*index 8*/
@@ -433,7 +434,7 @@ namespace MillionaireGame
                     new List<string>
                     {
                         "Sätt dina marker på bordet och känn pulsen stiga! Här har du 50% chans att dubbla dina satsade pengar. Kommer du att \nse rött eller svart?",
-                        "Satsa på tärningarnas utfall i detta spännande tärningsspel! Om du satsar på ett specifikt nummer och vinner, kan du \nfå upp till 6 gånger din insats! Det är tur som gäller när tärningarna rullas!",
+                        "Satsa på tärningarnas utfall i detta spännande tärningsspel! Om du satsar på ett specifikt nummer och vinner, har du \n16% chans att få upp till 6 gånger din insats! Det är tur som gäller när tärningarna rullas!",
                         "Dra i spaken och hoppas på det bästa! Här har du endast 1% chans att vinna hela 10 gånger din satsning. Kommer du att \nbli den lyckliga som går hem med storvinsten, eller är du bara ännu en spelare som lämnar med tomma fickor?"
                     },
                     
@@ -460,7 +461,7 @@ namespace MillionaireGame
                         "Till och med 500 kronor kan kännas jobbigt att skänka... Men det är bättre än att bara klaga. Ditt stöd hjälper till \natt bevara planeten – och kanske ger det din karma en uppgradering inför nästa semester. Varför inte?"
                     },
 
-                    new List<int> { +30, +20, +5 }, // Karma påverkan (exempelvärden)
+                    new List<int> { +40, +20, +5 }, // Karma påverkan (exempelvärden)
                     new List<double?> { -20000, -4000, -500 }, // Ev. Fast ekonomisk påverkan
                     new List<double?> {null, null, null} // Ev. Procentuell påverkan på investerat kapital
                 ),
@@ -572,9 +573,10 @@ namespace MillionaireGame
             }
             
             Random random = new Random(); // Generera randomiserat nummer mellan 1 och 2
-            bool SuccessfulInvestment = random.NextDouble() <= 0.8; // 80% chans att lyckas med investering
+                                         
+            bool SuccessfulInvestment = (optionIndex == 1) || (random.NextDouble() <= 0.9);  // Kontrollera om det är scenario med index 1 och ge 100% chans till framgång, annars 80%
 
-            
+
             DisplayPlayerInfo(); // Visa spelarinformation
             Console.WriteLine($"Du har investerat {investmentAmount:F2} SEK i {scenario.OptionName[optionIndex]}.");
 
@@ -931,7 +933,7 @@ namespace MillionaireGame
             _stopwatch.Stop(); // Stoppa tidtagaren när spelet avslutas
             TimeSpan totalTime = _stopwatch.Elapsed; // Hämta den totala tiden
             Console.Clear();
-            Console.WriteLine("Tack för att du spelade Miljonärsresan!");
+            Console.WriteLine("Tack för att du spelade Kapitalträsk!");
             Console.WriteLine($"Total speltid: {totalTime.Minutes} minuter och {totalTime.Seconds} sekunder.");
             Environment.Exit(0);
         }

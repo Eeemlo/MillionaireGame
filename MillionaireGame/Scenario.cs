@@ -37,26 +37,10 @@ namespace MillionaireGame
                 Console.WriteLine($"1. {OptionName[0]}"); // Skriv ut endast ett alternativ
                 Console.WriteLine($"{Options[0]}"); // Beskrivning för det alternativet
 
-                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
 
-                // Kontrollera om vi har en fast påverkan (FinancialImpacts) eller procentuell avkastning (Returns)
-                if (FinancialImpacts != null && FinancialImpacts.Count > 0 && FinancialImpacts[0] != null)
-                {
-                    // Om det är fast påverkan
-                    double impact = FinancialImpacts[0] ?? 0;
-                    Console.WriteLine($"(Fast ekonomisk påverkan: {impact} SEK, Karmapåverkan: {KarmaImpacts[0]})\n");
-                }
-                else if (Returns != null && Returns.Count > 0 && Returns[0] != null)
-                {
-                    // Om det är procentuell avkastning
-                    double impact = Returns[0] ?? 0;
-                    Console.WriteLine($"(80% chans till avkastning om: {impact * 100}%, Karmapåverkan: {KarmaImpacts[0]})\n");
-                }
-                else
-                {
-                    // Om ingen ekonomisk påverkan finns, skriv ut endast social status och karmapåverkan
-                    Console.WriteLine($"(Ekonomisk påverkan står i beskrivning, Karmapåverkan: {KarmaImpacts[0]})\n");
-                }
+
+                Console.WriteLine($"(100% chans till avkastning om: {Returns[0] * 100}%, Karmapåverkan: {KarmaImpacts[0]})\n");
 
                 Console.ResetColor();
             }
@@ -67,7 +51,7 @@ namespace MillionaireGame
                     Console.WriteLine($"{i + 1}. {OptionName[i]}"); // Skriv ut varje alternativ
                     Console.WriteLine($"{Options[i]}"); // Beskrivning för varje alternativ
 
-                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
 
                     // Kontrollera om vi har en fast påverkan eller procentuell avkastning
                     if (FinancialImpacts != null && FinancialImpacts.Count > i && FinancialImpacts[i] != null)
@@ -80,7 +64,7 @@ namespace MillionaireGame
                     {
                         // Om det är procentuell avkastning
                         double impact = Returns[i] ?? 0;
-                        Console.WriteLine($"(80% chans till avkastning om: {impact * 100}%, Karmapåverkan: {KarmaImpacts[i]})\n");
+                        Console.WriteLine($"(90% chans till avkastning om: {impact * 100}%, Karmapåverkan: {KarmaImpacts[i]})\n");
                     }
                     else
                     {
